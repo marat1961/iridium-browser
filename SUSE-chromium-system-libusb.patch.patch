@@ -1,7 +1,7 @@
-From 3861ff3cddacac6e86186ab5c987cbd7d15e63c8 Mon Sep 17 00:00:00 2001
+From c57590971d1152769b05a7eb4377fa45c5f22fdd Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 6 Sep 2020 20:36:48 +0200
-Subject: [PATCH 11/76] SUSE chromium-system-libusb.patch
+Subject: [PATCH 09/79] SUSE chromium-system-libusb.patch
 
 ---
  build/linux/unbundle/libusb.gn           | 24 ++++++++++++++++++++++++
@@ -11,7 +11,7 @@ Subject: [PATCH 11/76] SUSE chromium-system-libusb.patch
 
 diff --git build/linux/unbundle/libusb.gn build/linux/unbundle/libusb.gn
 new file mode 100644
-index 0000000000000..9f56f092d1374
+index 000000000000..9f56f092d137
 --- /dev/null
 +++ build/linux/unbundle/libusb.gn
 @@ -0,0 +1,24 @@
@@ -40,7 +40,7 @@ index 0000000000000..9f56f092d1374
 +  public_configs = [ ":system_libusb" ]
 +}
 diff --git build/linux/unbundle/replace_gn_files.py build/linux/unbundle/replace_gn_files.py
-index d4d07f23d9909..51cef31a94bad 100755
+index eba4bd1fb3c8..b641cb0f98c6 100755
 --- build/linux/unbundle/replace_gn_files.py
 +++ build/linux/unbundle/replace_gn_files.py
 @@ -27,6 +27,7 @@ REPLACEMENTS = {
@@ -52,5 +52,5 @@ index d4d07f23d9909..51cef31a94bad 100755
    'libwebp': 'third_party/libwebp/BUILD.gn',
    'libxml': 'third_party/libxml/BUILD.gn',
 -- 
-2.29.1
+2.30.1
 

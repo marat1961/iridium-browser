@@ -1,16 +1,17 @@
-From 992f40a4ae86045f20973d36e1f97608b2bfe8ce Mon Sep 17 00:00:00 2001
+From 6288df2562b93624ecdb370cdb02f7c7e1e142d0 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Wed, 14 Oct 2020 12:26:10 +0200
-Subject: [PATCH 58/76] base: fix nullptr deref around GetTaskExecutorForTraits
+Subject: [PATCH 60/79] base: fix nullptr deref around GetTaskExecutorForTraits
 
 When trknotify.cpp tries to post a UI task, some executors
 are still nullptr.
 ---
- base/task/post_task.cc | 28 ++++++++++++++++++++--------
- 1 file changed, 20 insertions(+), 8 deletions(-)
+ base/task/post_task.cc                        | 28 +++++++++++++------
+ .../scheduler/browser_task_executor.cc        | 13 ++++++++-
+ 2 files changed, 32 insertions(+), 9 deletions(-)
 
 diff --git base/task/post_task.cc base/task/post_task.cc
-index 744d0043520f7..06031bc10d11a 100644
+index 744d0043520f..06031bc10d11 100644
 --- base/task/post_task.cc
 +++ base/task/post_task.cc
 @@ -72,8 +72,10 @@ bool PostDelayedTask(const Location& from_here,
@@ -72,6 +73,59 @@ index 744d0043520f7..06031bc10d11a 100644
  }
  #endif  // defined(OS_WIN)
  
+diff --git content/browser/scheduler/browser_task_executor.cc content/browser/scheduler/browser_task_executor.cc
+index 82801d316d76..8f594bfe2614 100644
+--- content/browser/scheduler/browser_task_executor.cc
++++ content/browser/scheduler/browser_task_executor.cc
+@@ -260,7 +260,8 @@ void BrowserTaskExecutor::Shutdown() {
+ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
+     BrowserThread::ID identifier) {
+   DCHECK(Get());
+-
++  if (Get() == nullptr)
++    return;
+   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+ 
+   switch (identifier) {
+@@ -282,6 +283,8 @@ void BrowserTaskExecutor::RunAllPendingTasksOnThreadForTesting(
+ 
+ // static
+ void BrowserTaskExecutor::EnableAllQueues() {
++  if (Get() == nullptr)
++    return;
+   Get()->browser_ui_thread_handle_->EnableAllQueues();
+   Get()->browser_io_thread_handle_->EnableAllQueues();
+ }
+@@ -289,21 +292,29 @@ void BrowserTaskExecutor::EnableAllQueues() {
+ // static
+ scoped_refptr<base::SingleThreadTaskRunner>
+ BrowserTaskExecutor::GetUIThreadTaskRunner(const BrowserTaskTraits& traits) {
++  if (Get() == nullptr)
++    return nullptr;
+   return Get()->GetTaskRunner(BrowserThread::UI, traits);
+ }
+ 
+ // static
+ scoped_refptr<base::SingleThreadTaskRunner>
+ BrowserTaskExecutor::GetIOThreadTaskRunner(const BrowserTaskTraits& traits) {
++  if (Get() == nullptr)
++    return nullptr;
+   return Get()->GetTaskRunner(BrowserThread::IO, traits);
+ }
+ 
+ // static
+ void BrowserTaskExecutor::InitializeIOThread() {
++  if (Get() == nullptr)
++    return;
+   Get()->browser_io_thread_handle_->EnableAllExceptBestEffortQueues();
+ }
+ 
+ std::unique_ptr<BrowserProcessSubThread> BrowserTaskExecutor::CreateIOThread() {
++  if (Get() == nullptr)
++    return nullptr;
+   DCHECK(Get()->io_thread_executor_);
+ 
+   std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate =
 -- 
-2.29.1
+2.30.1
 

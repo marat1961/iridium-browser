@@ -1,14 +1,14 @@
-From ebf99172a9670f120869a5331fb9a88183d67278 Mon Sep 17 00:00:00 2001
+From c1daebc9ca8d0dcd0b0eb0be3e827a7620982655 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 24 May 2020 08:15:38 +0200
-Subject: [PATCH 06/76] SUSE chromium-libusb_interrupt_event_handler.patch
+Subject: [PATCH 06/79] SUSE chromium-libusb_interrupt_event_handler.patch
 
 ---
  services/device/usb/usb_context.cc | 4 ++++
  1 file changed, 4 insertions(+)
 
 diff --git services/device/usb/usb_context.cc services/device/usb/usb_context.cc
-index 304be8f14ae39..9e8b82b107f81 100644
+index 304be8f14ae3..9e8b82b107f8 100644
 --- services/device/usb/usb_context.cc
 +++ services/device/usb/usb_context.cc
 @@ -58,7 +58,11 @@ void UsbContext::UsbEventHandler::Run() {
@@ -24,5 +24,5 @@ index 304be8f14ae39..9e8b82b107f81 100644
  
  UsbContext::UsbContext(PlatformUsbContext context) : context_(context) {
 -- 
-2.29.1
+2.30.1
 

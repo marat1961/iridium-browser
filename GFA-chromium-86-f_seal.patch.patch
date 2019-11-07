@@ -1,0 +1,35 @@
+From 292b9afb6c825076b1362b8781566e0c76bde662 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Mon, 1 Mar 2021 10:13:27 +0100
+Subject: [PATCH 20/79] GFA chromium-86-f_seal.patch
+
+---
+ sandbox/policy/linux/bpf_gpu_policy_linux.cc | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git sandbox/policy/linux/bpf_gpu_policy_linux.cc sandbox/policy/linux/bpf_gpu_policy_linux.cc
+index 829efee8bef4..53655e4eb766 100644
+--- sandbox/policy/linux/bpf_gpu_policy_linux.cc
++++ sandbox/policy/linux/bpf_gpu_policy_linux.cc
+@@ -6,6 +6,18 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#ifndef F_SEAL_SEAL
++# define F_SEAL_SEAL    0x0001
++#endif
++#ifndef F_SEAL_SHRINK
++# define F_SEAL_SHRINK        0x0002
++#endif
++#ifndef F_SEAL_GROW
++# define F_SEAL_GROW  0x0004
++#endif
++#ifndef F_ADD_SEALS
++# define F_ADD_SEALS    1033
++#endif
+ #include <sys/socket.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+-- 
+2.30.1
+

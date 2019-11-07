@@ -1,14 +1,15 @@
-From 22f0aee4f3e4572504e5929790a37b046b057b56 Mon Sep 17 00:00:00 2001
+From 54ae2bc5f31e664ec9370fbcbf81ebc967bbde48 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Wed, 4 Nov 2020 13:39:28 +0100
-Subject: [PATCH 71/76] prefs: make new tab page be about:blank
+Subject: [PATCH 75/79] prefs: make new tab page be about:blank
 
 ---
  .../resources/local_ntp/local_ntp.html        | 403 ------------------
- 1 file changed, 403 deletions(-)
+ .../resources/new_tab_page/new_tab_page.html  |  42 --
+ 2 files changed, 445 deletions(-)
 
 diff --git chrome/browser/resources/local_ntp/local_ntp.html chrome/browser/resources/local_ntp/local_ntp.html
-index 1608f7574403c..e69de29bb2d1d 100644
+index 1608f7574403..e69de29bb2d1 100644
 --- chrome/browser/resources/local_ntp/local_ntp.html
 +++ chrome/browser/resources/local_ntp/local_ntp.html
 @@ -1,403 +0,0 @@
@@ -415,6 +416,53 @@ index 1608f7574403c..e69de29bb2d1d 100644
 -      integrity="$i18n{localNtpVoiceIntegrity}"></script>
 -</body>
 -</html>
+diff --git chrome/browser/resources/new_tab_page/new_tab_page.html chrome/browser/resources/new_tab_page/new_tab_page.html
+index 98dbd86af183..e69de29bb2d1 100644
+--- chrome/browser/resources/new_tab_page/new_tab_page.html
++++ chrome/browser/resources/new_tab_page/new_tab_page.html
+@@ -1,42 +0,0 @@
+-<!doctype html>
+-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+-  <head>
+-    <meta charset="utf-8">
+-    <title>$i18n{title}</title>
+-    <style>
+-      body {
+-        background: $i18n{backgroundColor};
+-        margin: 0;
+-      }
+-
+-      #oneGoogleBar {
+-        height: 56px;
+-      }
+-
+-      #backgroundImage {
+-        border: none;
+-        height: 100%;
+-        pointer-events: none;
+-        position: fixed;
+-        top: 0;
+-        visibility: hidden;
+-        width: 100%;
+-      }
+-
+-      [show-background-image] #backgroundImage {
+-        visibility: visible;
+-      }
+-    </style>
+-  </head>
+-  <body>
+-    <div id="oneGoogleBar"></div>
+-    <iframe id="backgroundImage"
+-        src="chrome-untrusted://new-tab-page/custom_background_image?url=$i18nRaw{backgroundImageUrl}">
+-    </iframe>
+-    <ntp-app></ntp-app>
+-    <script type="module" src="new_tab_page.js"></script>
+-    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+-    <link rel="stylesheet" href="shared_vars.css">
+-    <div id="oneGoogleBarEndOfBody"></div>
+-  </body>
+-</html>
 -- 
-2.29.1
+2.30.1
 

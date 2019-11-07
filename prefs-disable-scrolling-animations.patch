@@ -1,7 +1,7 @@
-From d552eea6037d8784eb7b37cd1098fd192143bb6f Mon Sep 17 00:00:00 2001
+From 7151eb1e77388396f9babad3b82b483d896e96cd Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Mon, 24 Apr 2017 16:11:53 +0200
-Subject: [PATCH 60/76] prefs: disable scrolling animations
+Subject: [PATCH 63/79] prefs: disable scrolling animations
 
 One hardware input should correspond to one screen change.
 Everything else is a waste of time for the user.
@@ -10,7 +10,7 @@ Everything else is a waste of time for the user.
  1 file changed, 1 insertion(+)
 
 diff --git ui/gfx/animation/animation_linux.cc ui/gfx/animation/animation_linux.cc
-index 0bcce53e57f33..181c96f9ad7d5 100644
+index 0bcce53e57f3..181c96f9ad7d 100644
 --- ui/gfx/animation/animation_linux.cc
 +++ ui/gfx/animation/animation_linux.cc
 @@ -13,6 +13,7 @@ namespace {
@@ -22,5 +22,5 @@ index 0bcce53e57f33..181c96f9ad7d5 100644
    return !provider || provider->AnimationsEnabled();
  }
 -- 
-2.29.1
+2.30.1
 

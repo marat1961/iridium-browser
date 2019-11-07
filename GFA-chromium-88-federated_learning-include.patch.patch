@@ -1,0 +1,25 @@
+From 629d40950910509751e0d4945c89d9e0ebe6a0d0 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Thu, 4 Mar 2021 17:09:59 +0100
+Subject: [PATCH 29/79] GFA chromium-88-federated_learning-include.patch
+
+---
+ components/federated_learning/floc_constants.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git components/federated_learning/floc_constants.cc components/federated_learning/floc_constants.cc
+index df66e5dccd11..2eb50f1cbe35 100644
+--- components/federated_learning/floc_constants.cc
++++ components/federated_learning/floc_constants.cc
+@@ -4,6 +4,8 @@
+ 
+ #include "components/federated_learning/floc_constants.h"
+ 
++#include <limits>
++
+ namespace federated_learning {
+ 
+ // This is only for experimentation and won't be served to websites.
+-- 
+2.30.1
+

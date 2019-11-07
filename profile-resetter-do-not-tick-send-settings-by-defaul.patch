@@ -1,7 +1,7 @@
-From 68bf077d6a9a6d31a4a706ea64ef167ec6fd8ff9 Mon Sep 17 00:00:00 2001
+From 56b1637d7f9a51c58d8392f9af165b92c665e865 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Tue, 28 Oct 2014 18:45:19 +0100
-Subject: [PATCH 35/76] profile-resetter: do not tick send-settings by default
+Subject: [PATCH 37/79] profile-resetter: do not tick send-settings by default
 
 When the user wishes to reset his preferences, Chromium would suggest
 to send over the old settings to Google. I presume that this is for
@@ -15,7 +15,7 @@ any information.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git chrome/browser/profile_resetter/reset_report_uploader.cc chrome/browser/profile_resetter/reset_report_uploader.cc
-index 5d34763586656..e6950fdc861cc 100644
+index ea847b6875ba..5042f6744542 100644
 --- chrome/browser/profile_resetter/reset_report_uploader.cc
 +++ chrome/browser/profile_resetter/reset_report_uploader.cc
 @@ -20,7 +20,7 @@
@@ -28,5 +28,5 @@ index 5d34763586656..e6950fdc861cc 100644
  GURL GetClientReportUrl(const std::string& report_url) {
    GURL url(report_url);
 -- 
-2.29.1
+2.30.1
 

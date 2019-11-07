@@ -1,7 +1,7 @@
-From 78f401f980ff470924db874fbeaadd4fe645c161 Mon Sep 17 00:00:00 2001
+From 1383514cae9a34335e77ebd766d0f4b8d4d5f3df Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 11 Sep 2014 16:35:12 +0200
-Subject: [PATCH 38/76] prefs: disable "Use a web service to help resolve
+Subject: [PATCH 40/79] prefs: disable "Use a web service to help resolve
  navigation errors"
 
 This goes towards reducing promiscuous outbound requests to
@@ -10,22 +10,50 @@ some central services.
 Impl. details:
 Set alternate_error_pages to be disabled by default.
 ---
- chrome/browser/ui/navigation_correction_tab_observer.cc | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ chrome/browser/net/dns_probe_browsertest.cc           | 2 +-
+ chrome/browser/net/profile_network_context_service.cc | 2 +-
+ weblayer/browser/browser_context_impl.cc              | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git chrome/browser/ui/navigation_correction_tab_observer.cc chrome/browser/ui/navigation_correction_tab_observer.cc
-index b3e3237e667c7..4a85d5f6e63ce 100644
---- chrome/browser/ui/navigation_correction_tab_observer.cc
-+++ chrome/browser/ui/navigation_correction_tab_observer.cc
-@@ -59,7 +59,7 @@ void NavigationCorrectionTabObserver::SetAllowEnableCorrectionsForTesting(
- void NavigationCorrectionTabObserver::RegisterProfilePrefs(
-     user_prefs::PrefRegistrySyncable* prefs) {
-   prefs->RegisterBooleanPref(embedder_support::kAlternateErrorPagesEnabled,
--                             true,
-+                             false,
-                              user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
- }
+diff --git chrome/browser/net/dns_probe_browsertest.cc chrome/browser/net/dns_probe_browsertest.cc
+index 4d9f894d7393..4339244dfeaa 100644
+--- chrome/browser/net/dns_probe_browsertest.cc
++++ chrome/browser/net/dns_probe_browsertest.cc
+@@ -200,7 +200,7 @@ void DnsProbeBrowserTest::SetUpOnMainThread() {
+   NetErrorTabHelper::set_state_for_testing(NetErrorTabHelper::TESTING_DEFAULT);
+ 
+   browser()->profile()->GetPrefs()->SetBoolean(
+-      embedder_support::kAlternateErrorPagesEnabled, true);
++      embedder_support::kAlternateErrorPagesEnabled, false);
+ 
+   ASSERT_TRUE(embedded_test_server()->Start());
+ 
+diff --git chrome/browser/net/profile_network_context_service.cc chrome/browser/net/profile_network_context_service.cc
+index eba28717a988..0f2bef9e06d4 100644
+--- chrome/browser/net/profile_network_context_service.cc
++++ chrome/browser/net/profile_network_context_service.cc
+@@ -320,7 +320,7 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
+ void ProfileNetworkContextService::RegisterProfilePrefs(
+     user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterBooleanPref(
+-      embedder_support::kAlternateErrorPagesEnabled, true,
++      embedder_support::kAlternateErrorPagesEnabled, false,
+       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+   registry->RegisterBooleanPref(prefs::kQuicAllowed, true);
+   registry->RegisterBooleanPref(prefs::kGloballyScopeHTTPAuthCacheEnabled,
+diff --git weblayer/browser/browser_context_impl.cc weblayer/browser/browser_context_impl.cc
+index ddfe182c1fbf..37d469515ca9 100644
+--- weblayer/browser/browser_context_impl.cc
++++ weblayer/browser/browser_context_impl.cc
+@@ -261,7 +261,7 @@ void BrowserContextImpl::RegisterPrefs(
+   // potential use cases in the future, as it is used for various purposes
+   // through //chrome).
+   pref_registry->RegisterBooleanPref(
+-      embedder_support::kAlternateErrorPagesEnabled, true);
++      embedder_support::kAlternateErrorPagesEnabled, false);
+   pref_registry->RegisterListPref(
+       site_isolation::prefs::kUserTriggeredIsolatedOrigins);
  
 -- 
-2.29.1
+2.30.1
 

@@ -1,7 +1,7 @@
-From ac0d9d11e68a776b933da4650869343287c7fb82 Mon Sep 17 00:00:00 2001
+From f92a5b7856dcdbb8acabadffc1cf7ecac9d0a246 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 1 Oct 2016 11:23:40 +0200
-Subject: [PATCH 68/76] first_run: barf if metrics_reporting is activated
+Subject: [PATCH 71/79] first_run: barf if metrics_reporting is activated
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -17,7 +17,7 @@ disabled, as no message is emitted.
  1 file changed, 4 insertions(+)
 
 diff --git chrome/browser/first_run/first_run_internal_posix.cc chrome/browser/first_run/first_run_internal_posix.cc
-index d6f97e19f35c4..f0f07c708a923 100644
+index 027bc67ce797..251e5ee83f3b 100644
 --- chrome/browser/first_run/first_run_internal_posix.cc
 +++ chrome/browser/first_run/first_run_internal_posix.cc
 @@ -23,6 +23,7 @@
@@ -39,5 +39,5 @@ index d6f97e19f35c4..f0f07c708a923 100644
        g_browser_process->local_state(),
        is_opt_in ? metrics::EnableMetricsDefault::OPT_IN
 -- 
-2.29.1
+2.30.1
 

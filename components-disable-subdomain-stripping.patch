@@ -1,40 +1,26 @@
-From 9c791ace1aadf6135056274ca26cfeaa35eeacd0 Mon Sep 17 00:00:00 2001
+From 24de5ea01bfddc9203eefb5647d3650fa75dcf26 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Fri, 9 Nov 2018 11:31:17 +0100
-Subject: [PATCH 69/76] components: disable subdomain stripping
+Subject: [PATCH 72/79] components: disable subdomain stripping
 
 https://www.bleepingcomputer.com/news/security/chrome-69-shows-the-www-and-m-subdomains-again-but-it-s-only-temporary/
 ---
- components/omnibox/common/omnibox_features.cc | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ components/omnibox/common/omnibox_features.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git components/omnibox/common/omnibox_features.cc components/omnibox/common/omnibox_features.cc
-index fcdfb2cef7fb4..25e04b38ae1be 100644
+index 66f22191bfe6..3c8c1ec1e133 100644
 --- components/omnibox/common/omnibox_features.cc
 +++ components/omnibox/common/omnibox_features.cc
-@@ -28,19 +28,19 @@ const base::Feature kHideFileUrlScheme{
+@@ -55,7 +55,7 @@ const base::Feature kHideFileUrlScheme{
      "OmniboxUIExperimentHideFileUrlScheme",
      // Android and iOS don't have the File security chip, and therefore still
      // need to show the file scheme.
 -    enabled_by_default_desktop_only};
 +    base::FEATURE_DISABLED_BY_DEFAULT};
  
- // Feature used to hide the scheme from steady state URLs displayed in the
- // toolbar. It is restored during editing.
- const base::Feature kHideSteadyStateUrlScheme{
-     "OmniboxUIExperimentHideSteadyStateUrlScheme",
--    base::FEATURE_ENABLED_BY_DEFAULT};
-+    base::FEATURE_DISABLED_BY_DEFAULT};
- 
- // Feature used to hide trivial subdomains from steady state URLs displayed in
- // the toolbar. It is restored during editing.
- const base::Feature kHideSteadyStateUrlTrivialSubdomains{
-     "OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains",
--    base::FEATURE_ENABLED_BY_DEFAULT};
-+    base::FEATURE_DISABLED_BY_DEFAULT};
- 
- // Feature used to reveal the path, query and ref from steady state URLs
- // on hover.
+ // Feature used to enable matching short words to bookmarks for suggestions.
+ const base::Feature kOmniboxShortBookmarkSuggestions{
 -- 
-2.29.1
+2.30.1
 

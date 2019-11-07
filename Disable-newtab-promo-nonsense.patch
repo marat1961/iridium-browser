@@ -1,17 +1,17 @@
-From bcd627f04899e6d209eb694dcb7fdbea9024e4d6 Mon Sep 17 00:00:00 2001
+From ee72d5cfeb292ed65761c3bc0f98db73adc30a14 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Wed, 4 Nov 2020 13:41:27 +0100
-Subject: [PATCH 70/76] Disable newtab promo nonsense
+Subject: [PATCH 74/79] Disable newtab promo nonsense
 
 ---
  chrome/browser/search/promos/promo_service.cc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git chrome/browser/search/promos/promo_service.cc chrome/browser/search/promos/promo_service.cc
-index b435d0f1cf43c..96a41406ffc05 100644
+index e6c464a32f15..8b582206af8b 100644
 --- chrome/browser/search/promos/promo_service.cc
 +++ chrome/browser/search/promos/promo_service.cc
-@@ -54,7 +54,7 @@ GURL GetGoogleBaseUrl() {
+@@ -55,7 +55,7 @@ GURL GetGoogleBaseUrl() {
  }
  
  GURL GetApiUrl() {
@@ -21,5 +21,5 @@ index b435d0f1cf43c..96a41406ffc05 100644
  
  // Parses an update proto from |value|. Will return false if |value| is not of
 -- 
-2.29.1
+2.30.1
 

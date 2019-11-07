@@ -1,7 +1,7 @@
-From 85aa90c2c53c0bca4cfb1850e53964cf941ba3f2 Mon Sep 17 00:00:00 2001
+From 2010aa51fd49e845348d14bb556c4763cc13a495 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Tue, 2 Jun 2015 11:01:50 +0200
-Subject: [PATCH 61/76] updater: disable updater pings
+Subject: [PATCH 64/79] updater: disable updater pings
 
 Despite auto-updater being arguably disabled (see previous commit),
 Chromium would still send background requests. Kill it.
@@ -12,7 +12,7 @@ Chromium would still send background requests. Kill it.
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git components/component_updater/component_updater_url_constants.cc components/component_updater/component_updater_url_constants.cc
-index 42bf2c4b96de5..d8d709482b5a2 100644
+index 42bf2c4b96de..d8d709482b5a 100644
 --- components/component_updater/component_updater_url_constants.cc
 +++ components/component_updater/component_updater_url_constants.cc
 @@ -15,9 +15,9 @@ namespace component_updater {
@@ -28,7 +28,7 @@ index 42bf2c4b96de5..d8d709482b5a2 100644
  
  }  // namespace component_updater
 diff --git components/component_updater/configurator_impl.cc components/component_updater/configurator_impl.cc
-index 5066fb240e0ec..40d60de5bbeb4 100644
+index 5066fb240e0e..40d60de5bbeb 100644
 --- components/component_updater/configurator_impl.cc
 +++ components/component_updater/configurator_impl.cc
 @@ -42,7 +42,7 @@ ConfiguratorImpl::ConfiguratorImpl(
@@ -49,5 +49,5 @@ index 5066fb240e0ec..40d60de5bbeb4 100644
    std::vector<GURL> urls{GURL(kUpdaterJSONDefaultUrl),
                           GURL(kUpdaterJSONFallbackUrl)};
 -- 
-2.29.1
+2.30.1
 

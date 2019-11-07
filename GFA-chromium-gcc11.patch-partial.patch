@@ -1,0 +1,93 @@
+From 74b132903228037ac65bdca63495fb0b300dae75 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Mon, 1 Mar 2021 10:13:47 +0100
+Subject: [PATCH 21/79] GFA chromium-gcc11.patch (partial)
+
+---
+ chrome/browser/ui/bookmarks/bookmark_tab_helper.cc              | 1 +
+ components/bookmarks/browser/base_bookmark_model_observer.cc    | 2 ++
+ components/bookmarks/browser/bookmark_expanded_state_tracker.cc | 1 +
+ ui/accessibility/platform/ax_platform_atk_hyperlink.cc          | 2 +-
+ ui/accessibility/platform/ax_platform_node_auralinux.cc         | 2 +-
+ ui/gtk/gtk_key_bindings_handler.cc                              | 2 +-
+ 6 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git chrome/browser/ui/bookmarks/bookmark_tab_helper.cc chrome/browser/ui/bookmarks/bookmark_tab_helper.cc
+index e8240497a429..374cd7ba04f1 100644
+--- chrome/browser/ui/bookmarks/bookmark_tab_helper.cc
++++ chrome/browser/ui/bookmarks/bookmark_tab_helper.cc
+@@ -2,6 +2,7 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
++#include <cstddef>
+ #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
+ 
+ #include "base/observer_list.h"
+diff --git components/bookmarks/browser/base_bookmark_model_observer.cc components/bookmarks/browser/base_bookmark_model_observer.cc
+index 657a3c96b7a2..ad641a082fbd 100644
+--- components/bookmarks/browser/base_bookmark_model_observer.cc
++++ components/bookmarks/browser/base_bookmark_model_observer.cc
+@@ -2,6 +2,8 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
++#include <cstddef>
++
+ #include "components/bookmarks/browser/base_bookmark_model_observer.h"
+ 
+ namespace bookmarks {
+diff --git components/bookmarks/browser/bookmark_expanded_state_tracker.cc components/bookmarks/browser/bookmark_expanded_state_tracker.cc
+index 4ad2afa1f500..5c4596e12ff9 100644
+--- components/bookmarks/browser/bookmark_expanded_state_tracker.cc
++++ components/bookmarks/browser/bookmark_expanded_state_tracker.cc
+@@ -2,6 +2,7 @@
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
++#include <cstddef>
+ #include "components/bookmarks/browser/bookmark_expanded_state_tracker.h"
+ 
+ #include <stdint.h>
+diff --git ui/accessibility/platform/ax_platform_atk_hyperlink.cc ui/accessibility/platform/ax_platform_atk_hyperlink.cc
+index be91def6b409..73f202356fcc 100644
+--- ui/accessibility/platform/ax_platform_atk_hyperlink.cc
++++ ui/accessibility/platform/ax_platform_atk_hyperlink.cc
+@@ -245,7 +245,7 @@ static void AXPlatformAtkHyperlinkInit(AXPlatformAtkHyperlink* self, gpointer) {
+ }
+ 
+ GType ax_platform_atk_hyperlink_get_type() {
+-  static volatile gsize type_volatile = 0;
++  static gsize type_volatile = 0;
+ 
+   AXPlatformNodeAuraLinux::EnsureGTypeInit();
+ 
+diff --git ui/accessibility/platform/ax_platform_node_auralinux.cc ui/accessibility/platform/ax_platform_node_auralinux.cc
+index 900fe8d2fff5..b89c5ff58c9a 100644
+--- ui/accessibility/platform/ax_platform_node_auralinux.cc
++++ ui/accessibility/platform/ax_platform_node_auralinux.cc
+@@ -2274,7 +2274,7 @@ void ClassInit(gpointer class_pointer, gpointer /* class_data */) {
+ GType GetType() {
+   AXPlatformNodeAuraLinux::EnsureGTypeInit();
+ 
+-  static volatile gsize type_volatile = 0;
++  static gsize type_volatile = 0;
+   if (g_once_init_enter(&type_volatile)) {
+     static const GTypeInfo type_info = {
+         sizeof(AXPlatformNodeAuraLinuxClass),  // class_size
+diff --git ui/gtk/gtk_key_bindings_handler.cc ui/gtk/gtk_key_bindings_handler.cc
+index c663a2074628..38a3424842ed 100644
+--- ui/gtk/gtk_key_bindings_handler.cc
++++ ui/gtk/gtk_key_bindings_handler.cc
+@@ -141,7 +141,7 @@ void GtkKeyBindingsHandler::HandlerClassInit(HandlerClass* klass) {
+ }
+ 
+ GType GtkKeyBindingsHandler::HandlerGetType() {
+-  static volatile gsize type_id_volatile = 0;
++  static gsize type_id_volatile = 0;
+   if (g_once_init_enter(&type_id_volatile)) {
+     GType type_id = g_type_register_static_simple(
+         GTK_TYPE_TEXT_VIEW, g_intern_static_string("GtkKeyBindingsHandler"),
+-- 
+2.30.1
+

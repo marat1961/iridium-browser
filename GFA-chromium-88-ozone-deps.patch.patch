@@ -1,0 +1,30 @@
+From 62343a227e41dfc5745edb2c76b82b3677063b10 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Thu, 4 Mar 2021 17:08:14 +0100
+Subject: [PATCH 24/79] GFA chromium-88-ozone-deps.patch
+
+---
+ content/browser/gpu/gpu_internals_ui.cc | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git content/browser/gpu/gpu_internals_ui.cc content/browser/gpu/gpu_internals_ui.cc
+index ce93594132fd..dba96dd7b733 100644
+--- content/browser/gpu/gpu_internals_ui.cc
++++ content/browser/gpu/gpu_internals_ui.cc
+@@ -394,7 +394,12 @@ std::unique_ptr<base::ListValue> GpuMemoryBufferInfo(
+ 
+   gpu::GpuMemoryBufferConfigurationSet native_config;
+ #if defined(USE_X11)
+-  if (!features::IsUsingOzonePlatform()) {
++#if defined(USE_OZONE)
++  const auto is_using_ozone_platform = features::IsUsingOzonePlatform();
++#else
++  const auto is_using_ozone_platform = false;
++#endif
++  if (!is_using_ozone_platform) {
+     for (const auto& config : gpu_extra_info.gpu_memory_buffer_support_x11) {
+       native_config.emplace(config);
+     }
+-- 
+2.30.1
+

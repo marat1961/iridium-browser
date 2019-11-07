@@ -1,0 +1,25 @@
+From a4529334505470d96a3677d9aa0613a1fa0f4dfc Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Thu, 4 Mar 2021 17:09:50 +0100
+Subject: [PATCH 28/79] GFA chromium-88-BookmarkModelObserver-include.patch
+
+---
+ components/bookmarks/browser/bookmark_model_observer.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git components/bookmarks/browser/bookmark_model_observer.h components/bookmarks/browser/bookmark_model_observer.h
+index 69c40e7363f4..0e5eb967d915 100644
+--- components/bookmarks/browser/bookmark_model_observer.h
++++ components/bookmarks/browser/bookmark_model_observer.h
+@@ -7,6 +7,8 @@
+ 
+ #include <set>
+ 
++#include <stddef.h>
++
+ class GURL;
+ 
+ namespace bookmarks {
+-- 
+2.30.1
+

@@ -1,7 +1,7 @@
-From d59e76f83642176b234912199199048c7843dbdb Mon Sep 17 00:00:00 2001
+From 1fd5864e55265011078351a771324f4f313a4554 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 13 Sep 2014 15:20:11 +0200
-Subject: [PATCH 41/76] prefs: disable network/DNS prediction
+Subject: [PATCH 43/79] prefs: disable network/DNS prediction
 
 Stop wasting my bandwidth (however little), and also don't tell others
 what I am about to visit.
@@ -11,7 +11,7 @@ what I am about to visit.
  2 files changed, 1 insertion(+), 2 deletions(-)
 
 diff --git chrome/browser/net/prediction_options.cc chrome/browser/net/prediction_options.cc
-index 5268257b841fc..9282bbbcb4574 100644
+index 5268257b841f..9282bbbcb457 100644
 --- chrome/browser/net/prediction_options.cc
 +++ chrome/browser/net/prediction_options.cc
 @@ -31,7 +31,6 @@ NetworkPredictionStatus CanPrefetchAndPrerender(
@@ -23,7 +23,7 @@ index 5268257b841fc..9282bbbcb4574 100644
    }
  }
 diff --git chrome/browser/net/prediction_options.h chrome/browser/net/prediction_options.h
-index 2ae6a1093090d..7fc83de1aa0fa 100644
+index 2ae6a1093090..7fc83de1aa0f 100644
 --- chrome/browser/net/prediction_options.h
 +++ chrome/browser/net/prediction_options.h
 @@ -22,7 +22,7 @@ enum NetworkPredictionOptions {
@@ -36,5 +36,5 @@ index 2ae6a1093090d..7fc83de1aa0fa 100644
  
  enum class NetworkPredictionStatus {
 -- 
-2.29.1
+2.30.1
 

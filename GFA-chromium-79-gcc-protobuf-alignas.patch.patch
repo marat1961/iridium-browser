@@ -1,9 +1,15 @@
-From 164c4907f3b3ad89f31aa164698f28738efc2bba Mon Sep 17 00:00:00 2001
+From 7f15f23454ab19af12570bb6b39640076ce76e1a Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
-Date: Sun, 6 Sep 2020 20:37:16 +0200
-Subject: [PATCH 12/76] SUSE chromium-79-gcc-alignas.patch
+Date: Wed, 18 Nov 2020 12:31:06 +0100
+Subject: [PATCH 16/79] GFA chromium-79-gcc-protobuf-alignas.patch
 
-Re-use chromium alignas workaround in protobuf.
+From 5d66d5907ac3e76d1e382b8a8e8afe653bd00f4c Mon Sep 17 00:00:00 2001
+From: Stephan Hartmann <stha09@googlemail.com>
+Date: Sun, 31 May 2020 13:59:15 +0000
+Subject: [PATCH] Fix GCC build with PROTOBUF_USE_DLLS enabled
+
+GCC does not allow mixing __attribute__(()) syntax and alignas()
+syntax. Re-use approach from chromium base/compiler_specific.h
 ---
  .../protobuf/src/google/protobuf/arena.h      |  2 +-
  .../protobuf/src/google/protobuf/port_def.inc | 29 +++++++++++++++++++
@@ -11,7 +17,7 @@ Re-use chromium alignas workaround in protobuf.
  3 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git third_party/protobuf/src/google/protobuf/arena.h third_party/protobuf/src/google/protobuf/arena.h
-index dedc22122e0a2..a8515ceeaf1a7 100644
+index dedc22122e0a..a8515ceeaf1a 100644
 --- third_party/protobuf/src/google/protobuf/arena.h
 +++ third_party/protobuf/src/google/protobuf/arena.h
 @@ -245,7 +245,7 @@ struct ArenaOptions {
@@ -24,7 +30,7 @@ index dedc22122e0a2..a8515ceeaf1a7 100644
    // Arena constructor taking custom options. See ArenaOptions below for
    // descriptions of the options available.
 diff --git third_party/protobuf/src/google/protobuf/port_def.inc third_party/protobuf/src/google/protobuf/port_def.inc
-index f1bd85d7f7bfa..6d02b534a2cf4 100644
+index f1bd85d7f7bf..6d02b534a2cf 100644
 --- third_party/protobuf/src/google/protobuf/port_def.inc
 +++ third_party/protobuf/src/google/protobuf/port_def.inc
 @@ -528,6 +528,35 @@ PROTOBUF_EXPORT_TEMPLATE_TEST(DEFAULT, __declspec(dllimport));
@@ -64,7 +70,7 @@ index f1bd85d7f7bfa..6d02b534a2cf4 100644
  #pragma clang diagnostic push
  // TODO(gerbens) ideally we cleanup the code. But a cursory try shows many
 diff --git third_party/protobuf/src/google/protobuf/port_undef.inc third_party/protobuf/src/google/protobuf/port_undef.inc
-index b7e67fe4a65f6..ba1fffc62cb15 100644
+index b7e67fe4a65f..ba1fffc62cb1 100644
 --- third_party/protobuf/src/google/protobuf/port_undef.inc
 +++ third_party/protobuf/src/google/protobuf/port_undef.inc
 @@ -80,6 +80,7 @@
@@ -76,5 +82,5 @@ index b7e67fe4a65f6..ba1fffc62cb15 100644
  
  
 -- 
-2.29.1
+2.30.1
 

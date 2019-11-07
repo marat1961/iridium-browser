@@ -1,0 +1,26 @@
+From 13a7c0301551b1ddd2b8511ca14cc28847655283 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Mon, 1 Mar 2021 10:12:47 +0100
+Subject: [PATCH 19/79] GFA chromium-86-ConsumeDurationNumber-constexpr.patch
+
+---
+ base/time/time.cc | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git base/time/time.cc base/time/time.cc
+index d224bd01f1ab..827053528dc9 100644
+--- base/time/time.cc
++++ base/time/time.cc
+@@ -61,8 +61,7 @@ struct ParsedDecimal {
+ //
+ // Adapted from absl:
+ // https://cs.chromium.org/chromium/src/third_party/abseil-cpp/absl/time/duration.cc?l=807&rcl=2c22e9135f107a4319582ae52e2e3e6b201b6b7c
+-constexpr Optional<ParsedDecimal> ConsumeDurationNumber(
+-    StringPiece& number_string) {
++Optional<ParsedDecimal> ConsumeDurationNumber(StringPiece& number_string) {
+   ParsedDecimal res;
+   StringPiece::const_iterator orig_start = number_string.begin();
+   // Parse contiguous digits.
+-- 
+2.30.1
+

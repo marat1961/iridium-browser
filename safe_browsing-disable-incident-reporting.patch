@@ -1,7 +1,7 @@
-From 4dfa8ed0814040317cb82d8545502186daa0a204 Mon Sep 17 00:00:00 2001
+From 0a5e78c0354f4c097014061f3e1eb6c51479cb7d Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Tue, 7 Jul 2015 17:02:09 +0200
-Subject: [PATCH 62/76] safe_browsing: disable incident reporting
+Subject: [PATCH 65/79] safe_browsing: disable incident reporting
 
 Disables the safebrowsing incident reporting where you could upload
 information about a blocked URL to Google (also added a trk prefix to
@@ -15,10 +15,10 @@ the URL so we get notified if this happens again in the future).
  5 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.cc chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.cc
-index 74fe066d39492..24a1c54ad7c0b 100644
+index da6dd6eb1b99..c3b037528222 100644
 --- chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.cc
 +++ chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.cc
-@@ -22,7 +22,7 @@ namespace safe_browsing {
+@@ -24,7 +24,7 @@ namespace safe_browsing {
  namespace {
  
  const char kSbIncidentReportUrl[] =
@@ -28,10 +28,10 @@ index 74fe066d39492..24a1c54ad7c0b 100644
  constexpr net::NetworkTrafficAnnotationTag
      kSafeBrowsingIncidentTrafficAnnotation =
 diff --git chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.cc chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.cc
-index b12350930163f..104502029b796 100644
+index ffe7437f9e05..c6d15a24d1a1 100644
 --- chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.cc
 +++ chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.cc
-@@ -302,11 +302,14 @@ IncidentReportingService::UploadContext::~UploadContext() {
+@@ -303,11 +303,14 @@ IncidentReportingService::UploadContext::~UploadContext() {
  
  // static
  bool IncidentReportingService::IsEnabledForProfile(Profile* profile) {
@@ -47,10 +47,10 @@ index b12350930163f..104502029b796 100644
  
  IncidentReportingService::IncidentReportingService(
 diff --git chrome/browser/safe_browsing/safe_browsing_blocking_page.cc chrome/browser/safe_browsing/safe_browsing_blocking_page.cc
-index 350cdb3153209..5796cb2497e10 100644
+index 51f934fcbca8..2ccaafcc44c2 100644
 --- chrome/browser/safe_browsing/safe_browsing_blocking_page.cc
 +++ chrome/browser/safe_browsing/safe_browsing_blocking_page.cc
-@@ -63,8 +63,7 @@ class SafeBrowsingBlockingPageFactoryImpl
+@@ -65,8 +65,7 @@ class SafeBrowsingBlockingPageFactoryImpl
      PrefService* prefs =
          Profile::FromBrowserContext(web_contents->GetBrowserContext())
              ->GetPrefs();
@@ -61,10 +61,10 @@ index 350cdb3153209..5796cb2497e10 100644
          prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled);
  
 diff --git chrome/browser/safe_browsing/safe_browsing_service.cc chrome/browser/safe_browsing/safe_browsing_service.cc
-index 0c70a941f7ba8..9b4faa5144f80 100644
+index 7178d705ddb7..10d89cd8426d 100644
 --- chrome/browser/safe_browsing/safe_browsing_service.cc
 +++ chrome/browser/safe_browsing/safe_browsing_service.cc
-@@ -247,7 +247,7 @@ SafeBrowsingUIManager* SafeBrowsingService::CreateUIManager() {
+@@ -262,7 +262,7 @@ SafeBrowsingUIManager* SafeBrowsingService::CreateUIManager() {
  }
  
  void SafeBrowsingService::RegisterAllDelayedAnalysis() {
@@ -74,10 +74,10 @@ index 0c70a941f7ba8..9b4faa5144f80 100644
  #endif
  }
 diff --git components/security_interstitials/core/safe_browsing_loud_error_ui.cc components/security_interstitials/core/safe_browsing_loud_error_ui.cc
-index a375f46bc9203..7ba1829b9cc1d 100644
+index a57006642e8a..1c1d94e8c1c2 100644
 --- components/security_interstitials/core/safe_browsing_loud_error_ui.cc
 +++ components/security_interstitials/core/safe_browsing_loud_error_ui.cc
-@@ -23,6 +23,7 @@ namespace {
+@@ -25,6 +25,7 @@ namespace {
  // For malware interstitial pages, we link the problematic URL to Google's
  // diagnostic page.
  const char kSbDiagnosticUrl[] =
@@ -86,5 +86,5 @@ index a375f46bc9203..7ba1829b9cc1d 100644
  
  // Constants for the V4 phishing string upgrades.
 -- 
-2.29.1
+2.30.1
 

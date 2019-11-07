@@ -1,72 +1,80 @@
-From 21417fd0acef19e687fc15044da84f4b73c2a271 Mon Sep 17 00:00:00 2001
+From 2380eec99e6d1ba921656dd7e98af8098d0cc93c Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Wed, 22 Jul 2015 12:24:15 +0200
-Subject: [PATCH 64/76] safe_browsing: disable cookie transmission
+Subject: [PATCH 67/79] safe_browsing: disable cookie transmission
 
 Disables sending/setting cookies for Safebrowsing requests. This
 prevents the long-living tracking cookie from being set.
 
 References: https://github.com/iridium-browser/iridium-browser/issues/37
 ---
- chrome/browser/safe_browsing/client_side_detection_service.cc  | 2 +-
- .../download_protection/check_client_download_request_base.cc  | 2 +-
- .../download_protection/ppapi_download_request.cc              | 2 +-
- .../safe_browsing/content/browser/threat_details_cache.cc      | 3 ++-
- 4 files changed, 5 insertions(+), 4 deletions(-)
+ .../safe_browsing/client_side_detection_service.cc        | 8 ++------
+ .../check_client_download_request_base.cc                 | 1 +
+ .../download_protection/ppapi_download_request.cc         | 1 +
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
 diff --git chrome/browser/safe_browsing/client_side_detection_service.cc chrome/browser/safe_browsing/client_side_detection_service.cc
-index 50626b916b93e..9e305dbf75175 100644
+index 44f7098f5041..75f69d55f225 100644
 --- chrome/browser/safe_browsing/client_side_detection_service.cc
 +++ chrome/browser/safe_browsing/client_side_detection_service.cc
-@@ -292,7 +292,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
-   auto resource_request = std::make_unique<network::ResourceRequest>();
+@@ -221,16 +221,12 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
+     ClientReportPhishingRequestCallback callback) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+ 
+-  if (!enabled_) {
++  if (1) {
+     if (!callback.is_null())
+       std::move(callback).Run(GURL(request->url()), false);
+     return;
+   }
+ 
+-#if 1
+-  if (!callback.is_null())
+-    callback.Run(GURL(request->url()), false);
+-#else
+   // Fill in metadata about which model we used.
+   request->set_model_filename(model_loader_->name());
+   if (is_extended_reporting || is_enhanced_reporting) {
+@@ -291,6 +287,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
    resource_request->url = GetClientReportUrl(kClientReportPhishingUrl);
    resource_request->method = "POST";
--  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-+  resource_request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
++  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
    auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                   traffic_annotation);
    loader->AttachStringForUpload(request_data, "application/octet-stream");
+@@ -309,7 +306,6 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
+ 
+   // Record that we made a request
+   phishing_report_times_.push(base::Time::Now());
+-#endif
+ }
+ 
+ void ClientSideDetectionService::HandlePhishingVerdict(
 diff --git chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc
-index 25d42accbc990..423d9af463f90 100644
+index 3a032040f7c0..d40cd71f8072 100644
 --- chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc
 +++ chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc
-@@ -619,7 +619,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
-   auto resource_request = std::make_unique<network::ResourceRequest>();
+@@ -622,6 +622,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
    resource_request->url = PPAPIDownloadRequest::GetDownloadRequestUrl();
    resource_request->method = "POST";
--  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-+  resource_request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
++  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
  
    if (!access_token_.empty()) {
      resource_request->headers.SetHeader(
 diff --git chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc
-index 1ac58b83526fb..f253414311e91 100644
+index 242e37fad384..2360b5e7dfb4 100644
 --- chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc
 +++ chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc
-@@ -253,7 +253,7 @@ void PPAPIDownloadRequest::SendRequest() {
-   auto resource_request = std::make_unique<network::ResourceRequest>();
+@@ -253,6 +253,7 @@ void PPAPIDownloadRequest::SendRequest() {
    resource_request->url = GetDownloadRequestUrl();
    resource_request->method = "POST";
--  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
-+  resource_request->load_flags = net::LOAD_DISABLE_CACHE | net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
++  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
    loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                               traffic_annotation);
    loader_->AttachStringForUpload(client_download_request_data_,
-diff --git components/safe_browsing/content/browser/threat_details_cache.cc components/safe_browsing/content/browser/threat_details_cache.cc
-index 70c5ee9278ca5..5cfa4d670fde9 100644
---- components/safe_browsing/content/browser/threat_details_cache.cc
-+++ components/safe_browsing/content/browser/threat_details_cache.cc
-@@ -111,7 +111,8 @@ void ThreatDetailsCacheCollector::OpenEntry() {
-   resource_request->url = GURL(resources_it_->first);
-   // Only from cache, and don't use cookies.
-   resource_request->load_flags =
--      net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION;
-+      net::LOAD_ONLY_FROM_CACHE | net::LOAD_SKIP_CACHE_VALIDATION |
-+      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
-   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-   current_load_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                    traffic_annotation);
 -- 
-2.29.1
+2.30.1
 

@@ -1,7 +1,7 @@
-From 770826d8c78cb477e9795600ed23d7b282bdb1a2 Mon Sep 17 00:00:00 2001
+From bc6e89ce7997757152056b24ff2e17d955687382 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 8 Nov 2014 21:40:49 +0100
-Subject: [PATCH 52/76] prefs: use separate directory for config
+Subject: [PATCH 54/79] prefs: use separate directory for config
 
 Do not overwrite an existing Chromium configuration.
 ---
@@ -9,7 +9,7 @@ Do not overwrite an existing Chromium configuration.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git chrome/common/chrome_paths_linux.cc chrome/common/chrome_paths_linux.cc
-index 42d355bed93d9..0f409a39a2f9b 100644
+index 42d355bed93d..0f409a39a2f9 100644
 --- chrome/common/chrome_paths_linux.cc
 +++ chrome/common/chrome_paths_linux.cc
 @@ -91,7 +91,7 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
@@ -22,5 +22,5 @@ index 42d355bed93d9..0f409a39a2f9b 100644
    *result = config_dir.Append(data_dir_basename + GetChannelSuffixForDataDir());
    return true;
 -- 
-2.29.1
+2.30.1
 

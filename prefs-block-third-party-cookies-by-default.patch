@@ -1,28 +1,30 @@
-From 40dccec743423c0510f99b4ad6c2be18c237e051 Mon Sep 17 00:00:00 2001
+From 342f6de5b02fc4f514e329c0de24a11d78850782 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 13 Sep 2014 16:43:55 +0200
-Subject: [PATCH 42/76] prefs: block third-party cookies by default
+Subject: [PATCH 44/79] prefs: block third-party cookies by default
 
 Reject extra cookies which are likely used for tracking and whatnot.
 There are very few websites which require this, and if you do visit
 some, static exceptions can be defined.
 ---
- components/content_settings/core/browser/cookie_settings.cc | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ chrome/browser/prefs/browser_prefs.cc | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git components/content_settings/core/browser/cookie_settings.cc components/content_settings/core/browser/cookie_settings.cc
-index a7868548eaa1d..9143278b5ff08 100644
---- components/content_settings/core/browser/cookie_settings.cc
-+++ components/content_settings/core/browser/cookie_settings.cc
-@@ -63,7 +63,7 @@ void CookieSettings::GetCookieSettings(
- void CookieSettings::RegisterProfilePrefs(
-     user_prefs::PrefRegistrySyncable* registry) {
-   registry->RegisterBooleanPref(
--      prefs::kBlockThirdPartyCookies, false,
-+      prefs::kBlockThirdPartyCookies, true,
-       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-   registry->RegisterIntegerPref(
-       prefs::kCookieControlsMode,
+diff --git chrome/browser/prefs/browser_prefs.cc chrome/browser/prefs/browser_prefs.cc
+index f92fc6b05836..c7072e9093de 100644
+--- chrome/browser/prefs/browser_prefs.cc
++++ chrome/browser/prefs/browser_prefs.cc
+@@ -548,9 +548,7 @@ void RegisterProfilePrefsForMigration(
+   registry->RegisterDictionaryPref(kHashedAvailablePages);
+ 
+   registry->RegisterDictionaryPref(kObservedSessionTime);
+-
+-  registry->RegisterBooleanPref(kBlockThirdPartyCookies, false);
+-
++  registry->RegisterBooleanPref(kBlockThirdPartyCookies, true);
+   registry->RegisterTimePref(kPluginsDeprecationInfobarLastShown, base::Time());
+ 
+   registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
 -- 
-2.29.1
+2.30.1
 

@@ -1,0 +1,25 @@
+From a739ccb850977d57d764bc7bfe55f01e2dd7a4b9 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Thu, 4 Mar 2021 17:10:37 +0100
+Subject: [PATCH 31/79] GFA chromium-88-CompositorFrameReporter-dcheck.patch
+
+---
+ cc/metrics/compositor_frame_reporter.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git cc/metrics/compositor_frame_reporter.cc cc/metrics/compositor_frame_reporter.cc
+index 93d0e2352a78..da04b33d3fdc 100644
+--- cc/metrics/compositor_frame_reporter.cc
++++ cc/metrics/compositor_frame_reporter.cc
+@@ -671,7 +671,7 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
+ 
+ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
+   for (const auto& event_metrics : events_metrics_) {
+-    DCHECK_NE(event_metrics, nullptr);
++    DCHECK(event_metrics);
+     const std::string histogram_base_name =
+         GetEventLatencyHistogramBaseName(*event_metrics);
+     const int event_type_index = static_cast<int>(event_metrics->type());
+-- 
+2.30.1
+

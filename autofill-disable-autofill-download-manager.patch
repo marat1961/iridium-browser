@@ -1,7 +1,7 @@
-From 88bb98723fdd4fccb103e227c2529077450e7160 Mon Sep 17 00:00:00 2001
+From ab32dbb6a464f71ffa375a14a214e12c9432eec7 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 11 Sep 2014 16:37:32 +0200
-Subject: [PATCH 37/76] autofill: disable autofill download manager
+Subject: [PATCH 39/79] autofill: disable autofill download manager
 
 Disables the autofill download manager (trk:158).
 ---
@@ -10,10 +10,10 @@ Disables the autofill download manager (trk:158).
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git components/autofill/core/browser/autofill_download_manager.cc components/autofill/core/browser/autofill_download_manager.cc
-index 1fe15d7faebe2..abc5f453c43b5 100644
+index e356433a2f89..074073f42b7e 100644
 --- components/autofill/core/browser/autofill_download_manager.cc
 +++ components/autofill/core/browser/autofill_download_manager.cc
-@@ -97,7 +97,7 @@ const net::BackoffEntry::Policy kAutofillBackoffPolicy = {
+@@ -96,7 +96,7 @@ const net::BackoffEntry::Policy kAutofillBackoffPolicy = {
  };
  
  const char kDefaultAutofillServerURL[] =
@@ -23,10 +23,10 @@ index 1fe15d7faebe2..abc5f453c43b5 100644
  // The default number of days after which to reset the registry of autofill
  // events for which an upload has been sent.
 diff --git components/autofill/core/browser/autofill_manager.cc components/autofill/core/browser/autofill_manager.cc
-index 4e8321b85e329..cee10ff19a2b1 100644
+index 9f4f5f3688e3..48fa7d0417ae 100644
 --- components/autofill/core/browser/autofill_manager.cc
 +++ components/autofill/core/browser/autofill_manager.cc
-@@ -1645,11 +1645,13 @@ AutofillManager::AutofillManager(
+@@ -1656,11 +1656,13 @@ AutofillManager::AutofillManager(
                                      : std::make_unique<CreditCardAccessManager>(
                                            driver, client_, personal_data_,
                                            credit_card_form_event_logger_.get());
@@ -38,8 +38,8 @@ index 4e8321b85e329..cee10ff19a2b1 100644
    }
 +#endif
    CountryNames::SetLocaleString(app_locale_);
+   offer_manager_ = client_->GetAutofillOfferManager();
  }
- 
 -- 
-2.29.1
+2.30.1
 

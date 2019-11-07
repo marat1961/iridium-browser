@@ -1,14 +1,14 @@
-From a21e3a9965bcc55e606e5b543d52663ae3a9a883 Mon Sep 17 00:00:00 2001
+From 5f6ce015f662ce79dfd334b176391cb074dd639f Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 6 Sep 2020 20:44:58 +0200
-Subject: [PATCH 22/76] SUSE system-libdrm.patch
+Subject: [PATCH 13/79] SUSE system-libdrm.patch
 
 ---
  ui/ozone/platform/drm/gpu/hardware_display_controller.cc | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git ui/ozone/platform/drm/gpu/hardware_display_controller.cc ui/ozone/platform/drm/gpu/hardware_display_controller.cc
-index 7cc196aa29368..875e3f6af6019 100644
+index 47a684e7d225..fd76633994a1 100644
 --- ui/ozone/platform/drm/gpu/hardware_display_controller.cc
 +++ ui/ozone/platform/drm/gpu/hardware_display_controller.cc
 @@ -5,6 +5,7 @@
@@ -28,5 +28,5 @@ index 7cc196aa29368..875e3f6af6019 100644
  #include "ui/gfx/geometry/point.h"
  #include "ui/gfx/geometry/size.h"
 -- 
-2.29.1
+2.30.1
 

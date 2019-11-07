@@ -1,0 +1,26 @@
+From 45b06a1e0d1154e0f4df17158ab36b54d3805ba8 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Thu, 4 Mar 2021 17:09:32 +0100
+Subject: [PATCH 27/79] GFA chromium-88-AXTreeFormatter-include.patch
+
+---
+ ui/accessibility/platform/inspect/tree_formatter.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git ui/accessibility/platform/inspect/tree_formatter.h ui/accessibility/platform/inspect/tree_formatter.h
+index 4a70a4d54395..bb237681ce21 100644
+--- ui/accessibility/platform/inspect/tree_formatter.h
++++ ui/accessibility/platform/inspect/tree_formatter.h
+@@ -5,6 +5,9 @@
+ #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
+ #define UI_ACCESSIBILITY_PLATFORM_INSPECT_TREE_FORMATTER_H_
+ 
++#include <memory>
++#include <vector>
++
+ #include "ui/accessibility/platform/inspect/inspect.h"
+ 
+ #include "ui/gfx/native_widget_types.h"
+-- 
+2.30.1
+

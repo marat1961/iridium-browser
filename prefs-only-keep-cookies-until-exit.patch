@@ -1,7 +1,7 @@
-From bb9f74d67cdf7c093f2e9e59be2d6061d725613c Mon Sep 17 00:00:00 2001
+From 93a4fa7f28f744bfe97d6bef0b73d17d8b65aca2 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 13 Sep 2014 17:25:47 +0200
-Subject: [PATCH 47/76] prefs: only keep cookies until exit
+Subject: [PATCH 49/79] prefs: only keep cookies until exit
 
 Out with all those tracking cookies!
 ---
@@ -9,7 +9,7 @@ Out with all those tracking cookies!
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git components/content_settings/core/browser/content_settings_registry.cc components/content_settings/core/browser/content_settings_registry.cc
-index 6941b2f1cba56..509a58099ad35 100644
+index c4c777cd8d49..6a58d6d39b96 100644
 --- components/content_settings/core/browser/content_settings_registry.cc
 +++ components/content_settings/core/browser/content_settings_registry.cc
 @@ -140,7 +140,7 @@ void ContentSettingsRegistry::Init() {
@@ -19,8 +19,8 @@ index 6941b2f1cba56..509a58099ad35 100644
 -  Register(ContentSettingsType::COOKIES, "cookies", CONTENT_SETTING_ALLOW,
 +  Register(ContentSettingsType::COOKIES, "cookies", CONTENT_SETTING_SESSION_ONLY,
             WebsiteSettingsInfo::SYNCABLE,
-            WhitelistedSchemes(kChromeUIScheme, kChromeDevToolsScheme),
+            AllowlistedSchemes(kChromeUIScheme, kChromeDevToolsScheme),
             ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
 -- 
-2.29.1
+2.30.1
 

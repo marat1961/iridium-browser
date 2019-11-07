@@ -1,7 +1,7 @@
-From f5e461cd4a783199c4cd6f0e2f38dcfd2da801c7 Mon Sep 17 00:00:00 2001
+From d94176459f1c35cd5d0f9281dee970741eec8fac Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
-Date: Wed, 20 May 2015 01:34:50 +0200
-Subject: [PATCH 59/76] net: add "trk:" scheme and help identify URLs being
+Date: Sun, 7 Mar 2021 22:42:50 +0100
+Subject: [PATCH 62/79] net: add "trk:" scheme and help identify URLs being
  retrieved
 
 The Chromium codebase has left us with a number of suspect URLs, and
@@ -27,107 +27,31 @@ We hack up the URLFetcher class which sits in the network stack, and
 most of the URL that get loaded pass through here. The trk: prefix is
 stripped and processing continues with the inner URL.
 ---
- chrome/BUILD.gn                               |  3 +
- chrome/app/chrome_main.cc                     | 21 +++++++
- .../chrome_autocomplete_scheme_classifier.cc  |  1 +
- chrome/browser/history/history_utils.cc       |  1 +
- chrome/browser/ui/browser_navigator.cc        |  7 ++-
- chrome/browser/ui/singleton_tabs.cc           |  3 +-
- components/infobars/core/infobar_delegate.h   |  1 +
- .../omnibox/browser/autocomplete_input.cc     |  6 +-
- content/browser/browser_url_handler_impl.cc   | 20 ++++++
- .../child_process_security_policy_impl.cc     |  1 +
- iridium/BUILD.gn                              |  9 +++
- iridium/trkbar.cpp                            | 45 ++++++++++++++
- iridium/trkbar.h                              | 33 ++++++++++
- iridium/trknotify.cpp                         | 62 +++++++++++++++++++
- iridium/trknotify.h                           | 20 ++++++
- net/url_request/url_request.cc                |  6 ++
- net/url_request/url_request.h                 |  2 +
- tools/metrics/histograms/enums.xml            |  1 +
- url/gurl.cc                                   | 35 +++++++++++
- url/gurl.h                                    |  5 ++
- url/url_constants.cc                          |  1 +
- url/url_constants.h                           |  1 +
- 22 files changed, 280 insertions(+), 4 deletions(-)
- create mode 100644 iridium/BUILD.gn
- create mode 100644 iridium/trkbar.cpp
- create mode 100644 iridium/trkbar.h
- create mode 100644 iridium/trknotify.cpp
- create mode 100644 iridium/trknotify.h
+ .../chrome_autocomplete_scheme_classifier.cc  |   1 +
+ chrome/browser/history/history_utils.cc       |   1 +
+ chrome/browser/signin/signin_promo.cc         |  12 +-
+ chrome/browser/ui/browser_navigator.cc        |   7 +-
+ chrome/browser/ui/singleton_tabs.cc           |   3 +-
+ components/infobars/core/infobar_delegate.h   |   1 +
+ .../omnibox/browser/autocomplete_input.cc     |   6 +-
+ content/browser/browser_url_handler_impl.cc   | 112 ++++++++++++++++++
+ .../child_process_security_policy_impl.cc     |   1 +
+ .../scheduler/browser_task_executor.cc        |   4 +
+ net/url_request/url_request.cc                |  35 ++++++
+ net/url_request/url_request.h                 |   5 +
+ .../network/public/cpp/simple_url_loader.cc   |   3 +
+ tools/metrics/histograms/enums.xml            |   1 +
+ url/gurl.cc                                   |  35 ++++++
+ url/gurl.h                                    |   5 +
+ url/url_constants.cc                          |   1 +
+ url/url_constants.h                           |   1 +
+ 18 files changed, 226 insertions(+), 8 deletions(-)
 
-diff --git chrome/BUILD.gn chrome/BUILD.gn
-index f06eeeee05c8f..8da8b2417e3e8 100644
---- chrome/BUILD.gn
-+++ chrome/BUILD.gn
-@@ -211,6 +211,8 @@ if (!is_android && !is_mac) {
-       sources += [ "app/chrome_exe_main_aura.cc" ]
-     }
- 
-+    deps += ["//iridium:trknotify"]
-+
-     if (is_linux) {
-       sources += [
-         "app/chrome_dll_resource.h",
-@@ -224,6 +226,7 @@ if (!is_android && !is_mac) {
-         # Chromium functionality directly into the executable.
-         ":browser_dependencies",
-         ":child_dependencies",
-+        "//iridium:trknotify",
- 
-         # For the sampling profiler.
-         "//chrome/common/profiler",
-diff --git chrome/app/chrome_main.cc chrome/app/chrome_main.cc
-index 8e41e2f210993..14c493f087504 100644
---- chrome/app/chrome_main.cc
-+++ chrome/app/chrome_main.cc
-@@ -17,6 +17,10 @@
- #include "content/public/common/content_switches.h"
- #include "headless/public/headless_shell.h"
- #include "ui/gfx/switches.h"
-+#if !defined(CHROME_MULTIPLE_DLL_CHILD)
-+#	include "net/url_request/url_request.h"
-+#	include "iridium/trknotify.h"
-+#endif
- 
- #if defined(OS_CHROMEOS)
- #include "chrome/browser/chromeos/tracing_allocation_failure_tracker.h"
-@@ -49,6 +53,19 @@ int ChromeMain(int argc, const char** argv);
- }
- #endif
- 
-+#if !defined(CHROME_MULTIPLE_DLL_CHILD)
-+static void trace_url_request(const std::string &caller, const GURL &url)
-+{
-+	iridium::log_url_request(caller, url);
-+	if (url.scheme() != url::kTraceScheme)
-+		/* Do not show infobar for non-trk URLs */
-+		return;
-+	if (url.is_trq())
-+		return;
-+	iridium::trace_url_request(caller, url);
-+}
-+#endif
-+
- #if defined(OS_WIN)
- DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
-                                  sandbox::SandboxInterfaceInfo* sandbox_info,
-@@ -115,6 +132,10 @@ int ChromeMain(int argc, const char** argv) {
-   }
- #endif  // defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
- 
-+#if !defined(CHROME_MULTIPLE_DLL_CHILD)
-+  net::trace_urlreq_cb = &trace_url_request;
-+#endif
-+
-   int rv = content::ContentMain(params);
- 
-   return rv;
 diff --git chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
-index e90ea488b1c08..cadb447aed817 100644
+index d5c3dd451afc..431f242e2728 100644
 --- chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
 +++ chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
-@@ -55,6 +55,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
+@@ -56,6 +56,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
    if (base::IsStringASCII(scheme) &&
        (ProfileIOData::IsHandledProtocol(scheme) ||
         base::LowerCaseEqualsASCII(scheme, content::kViewSourceScheme) ||
@@ -136,7 +60,7 @@ index e90ea488b1c08..cadb447aed817 100644
         base::LowerCaseEqualsASCII(scheme, url::kDataScheme))) {
      return metrics::OmniboxInputType::URL;
 diff --git chrome/browser/history/history_utils.cc chrome/browser/history/history_utils.cc
-index 3f54bbb409fec..8971b7e96ad2f 100644
+index 3f54bbb409fe..8971b7e96ad2 100644
 --- chrome/browser/history/history_utils.cc
 +++ chrome/browser/history/history_utils.cc
 @@ -21,6 +21,7 @@ bool CanAddURLToHistory(const GURL& url) {
@@ -147,11 +71,41 @@ index 3f54bbb409fec..8971b7e96ad2f 100644
        url.SchemeIs(chrome::kChromeNativeScheme) ||
        url.SchemeIs(chrome::kChromeSearchScheme) ||
        url.SchemeIs(dom_distiller::kDomDistillerScheme))
+diff --git chrome/browser/signin/signin_promo.cc chrome/browser/signin/signin_promo.cc
+index 5e4ce29b835b..913665421d2c 100644
+--- chrome/browser/signin/signin_promo.cc
++++ chrome/browser/signin/signin_promo.cc
+@@ -76,8 +76,10 @@ GURL GetChromeSyncURLForDice(const std::string& email,
+   GURL url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+   if (!email.empty())
+     url = net::AppendQueryParameter(url, "email_hint", email);
+-  if (!continue_url.empty())
+-    url = net::AppendQueryParameter(url, "continue", continue_url);
++  auto s2 = continue_url;
++  gurl_strip_trk(s2);
++  if (!s2.empty())
++    url = net::AppendQueryParameter(url, "continue", s2);
+   return url;
+ }
+ 
+@@ -86,8 +88,10 @@ GURL GetAddAccountURLForDice(const std::string& email,
+   GURL url = GaiaUrls::GetInstance()->add_account_url();
+   if (!email.empty())
+     url = net::AppendQueryParameter(url, "Email", email);
+-  if (!continue_url.empty())
+-    url = net::AppendQueryParameter(url, "continue", continue_url);
++  auto s2 = continue_url;
++  gurl_strip_trk(s2);
++  if (!s2.empty())
++    url = net::AppendQueryParameter(url, "continue", s2);
+   return url;
+ }
+ 
 diff --git chrome/browser/ui/browser_navigator.cc chrome/browser/ui/browser_navigator.cc
-index ecb449a9970b7..5d1d72a048df2 100644
+index 9e3369185322..e24bc7bb008f 100644
 --- chrome/browser/ui/browser_navigator.cc
 +++ chrome/browser/ui/browser_navigator.cc
-@@ -804,7 +804,12 @@ bool IsURLAllowedInIncognito(const GURL& url,
+@@ -793,7 +793,12 @@ bool IsURLAllowedInIncognito(const GURL& url,
      return stripped_url.is_valid() &&
             IsURLAllowedInIncognito(stripped_url, browser_context);
    }
@@ -166,7 +120,7 @@ index ecb449a9970b7..5d1d72a048df2 100644
  }
  
 diff --git chrome/browser/ui/singleton_tabs.cc chrome/browser/ui/singleton_tabs.cc
-index 6d99c680556d8..3d4f0ccfae8e1 100644
+index 6d99c680556d..3d4f0ccfae8e 100644
 --- chrome/browser/ui/singleton_tabs.cc
 +++ chrome/browser/ui/singleton_tabs.cc
 @@ -99,7 +99,8 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
@@ -180,22 +134,22 @@ index 6d99c680556d8..3d4f0ccfae8e1 100644
  
      GURL rewritten_tab_url = tab_url;
 diff --git components/infobars/core/infobar_delegate.h components/infobars/core/infobar_delegate.h
-index b1933ea71e79e..56cd2fba2adce 100644
+index d32451e392a2..dbd2a785416e 100644
 --- components/infobars/core/infobar_delegate.h
 +++ components/infobars/core/infobar_delegate.h
-@@ -168,6 +168,7 @@ class InfoBarDelegate {
-     MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID = 98,
-     CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID = 99,
-     LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID = 100,
+@@ -171,6 +171,7 @@ class InfoBarDelegate {
+     SYSTEM_INFOBAR_DELEGATE_MAC = 101,
+     EXPERIMENTAL_INFOBAR_DELEGATE_LACROS = 102,
+     ROSETTA_REQUIRED_INFOBAR_DELEGATE = 103,
 +    TRACKING_ALERT_INFOBAR_DELEGATE = 9001,
    };
  
    // Describes navigation events, used to decide whether infobars should be
 diff --git components/omnibox/browser/autocomplete_input.cc components/omnibox/browser/autocomplete_input.cc
-index 7511ab261a18e..0fe8c003e4021 100644
+index af84aa3e367f..463912accd6f 100644
 --- components/omnibox/browser/autocomplete_input.cc
 +++ components/omnibox/browser/autocomplete_input.cc
-@@ -488,6 +488,7 @@ void AutocompleteInput::ParseForEmphasizeComponents(
+@@ -486,6 +486,7 @@ void AutocompleteInput::ParseForEmphasizeComponents(
    // For the view-source and blob schemes, we should emphasize the host of the
    // URL qualified by the view-source or blob prefix.
    if ((base::LowerCaseEqualsASCII(scheme_str, kViewSourceScheme) ||
@@ -203,7 +157,7 @@ index 7511ab261a18e..0fe8c003e4021 100644
         base::LowerCaseEqualsASCII(scheme_str, url::kBlobScheme)) &&
        (static_cast<int>(text.length()) > after_scheme_and_colon)) {
      // Obtain the URL prefixed by view-source or blob and parse it.
-@@ -561,9 +562,10 @@ int AutocompleteInput::NumNonHostComponents(const url::Parsed& parts) {
+@@ -559,9 +560,10 @@ int AutocompleteInput::NumNonHostComponents(const url::Parsed& parts) {
  bool AutocompleteInput::HasHTTPScheme(const base::string16& input) {
    std::string utf8_input(base::UTF16ToUTF8(input));
    url::Component scheme;
@@ -217,14 +171,23 @@ index 7511ab261a18e..0fe8c003e4021 100644
  }
  
 diff --git content/browser/browser_url_handler_impl.cc content/browser/browser_url_handler_impl.cc
-index 88bc53e9626eb..e98eccb313fc3 100644
+index 35a7b78816ab..abf9ceb7d1fa 100644
 --- content/browser/browser_url_handler_impl.cc
 +++ content/browser/browser_url_handler_impl.cc
-@@ -15,9 +15,28 @@
+@@ -16,9 +16,36 @@
  #include "content/public/common/url_constants.h"
  #include "content/public/common/url_utils.h"
  #include "url/gurl.h"
 +#include "net/url_request/url_request.h"
++
++#include "chrome/browser/infobars/infobar_service.h"
++#include "chrome/browser/ui/browser_finder.h"
++#include "components/infobars/core/confirm_infobar_delegate.h"
++#include "components/infobars/core/infobar.h"
++#include "content/public/browser/browser_task_traits.h"
++#include "content/public/browser/browser_thread.h"
++#include "base/strings/utf_string_conversions.h"
++#include "services/network/public/cpp/simple_url_loader.h"
  
  namespace content {
  
@@ -232,8 +195,7 @@ index 88bc53e9626eb..e98eccb313fc3 100644
 +{
 +	if (!url->SchemeIs(url::kTraceScheme))
 +		return false;
-+	if (net::trace_urlreq_cb != NULL)
-+		(*net::trace_urlreq_cb)("handle_trace_scheme", *url);
++	iridium::log_request("handle_trace_scheme", *url);
 +	*url = url->strip_trk();
 +	return false;
 +}
@@ -249,7 +211,7 @@ index 88bc53e9626eb..e98eccb313fc3 100644
  // Handles rewriting view-source URLs for what we'll actually load.
  static bool HandleViewSource(GURL* url, BrowserContext* browser_context) {
    if (url->SchemeIs(kViewSourceScheme)) {
-@@ -101,6 +120,7 @@ BrowserURLHandlerImpl::BrowserURLHandlerImpl() :
+@@ -101,6 +128,7 @@ BrowserURLHandlerImpl::BrowserURLHandlerImpl() {
    AddHandlerPair(&HandleViewSource, &ReverseViewSource);
  
    GetContentClient()->browser()->BrowserURLHandlerCreated(this);
@@ -257,56 +219,31 @@ index 88bc53e9626eb..e98eccb313fc3 100644
  }
  
  BrowserURLHandlerImpl::~BrowserURLHandlerImpl() {
-diff --git content/browser/child_process_security_policy_impl.cc content/browser/child_process_security_policy_impl.cc
-index ca111c5b80ee9..ed5c79f5bf6b7 100644
---- content/browser/child_process_security_policy_impl.cc
-+++ content/browser/child_process_security_policy_impl.cc
-@@ -647,6 +647,7 @@ ChildProcessSecurityPolicyImpl::ChildProcessSecurityPolicyImpl() {
-   RegisterPseudoScheme(url::kJavaScriptScheme);
-   RegisterPseudoScheme(kViewSourceScheme);
-   RegisterPseudoScheme(kGoogleChromeScheme);
-+  RegisterPseudoScheme(url::kTraceScheme);
+@@ -185,4 +213,88 @@ void BrowserURLHandlerImpl::RemoveHandlerForTesting(URLHandler handler) {
+   url_handlers_.erase(it);
  }
  
- ChildProcessSecurityPolicyImpl::~ChildProcessSecurityPolicyImpl() {
-diff --git iridium/BUILD.gn iridium/BUILD.gn
-new file mode 100644
-index 0000000000000..913b266e04df6
---- /dev/null
-+++ iridium/BUILD.gn
-@@ -0,0 +1,9 @@
-+config("trknotify_c") {
-+        include_dirs = ["..", "../third_party/skia/include/config", "../third_party/skia/include/core"]
-+}
++class TrkBar : public ConfirmInfoBarDelegate {
++	public:
++	static void Create(InfoBarService *, const GURL &);
++	bool ShouldExpire(const NavigationDetails &) const override;
++	bool EqualsDelegate(infobars::InfoBarDelegate *) const override;
 +
-+component("trknotify") {
-+        sources = ["trkbar.cpp", "trkbar.h", "trknotify.cpp", "trknotify.h"]
-+        public_configs = [":trknotify_c"]
-+        deps = ["//chrome/browser/ui"]
-+}
-diff --git iridium/trkbar.cpp iridium/trkbar.cpp
-new file mode 100644
-index 0000000000000..16013abaf19b9
---- /dev/null
-+++ iridium/trkbar.cpp
-@@ -0,0 +1,45 @@
-+/*
-+ * Copyright 2015 The Iridium Authors
-+ *
-+ * Use of this source code is governed by a BSD-style license that can be
-+ * found in the LICENSE file.
-+ */
-+#include "base/strings/utf_string_conversions.h"
-+#include "components/infobars/core/infobar.h"
-+#include "iridium/trkbar.h"
++	private:
++	TrkBar(const GURL &);
++	base::string16 GetMessageText() const override;
++	int GetButtons() const override;
++	infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier(void) const override;
 +
-+namespace content {
++	GURL m_url;
++	DISALLOW_COPY_AND_ASSIGN(TrkBar);
++};
 +
-+void TrkBar::Create(InfoBarService *s, const GURL &url)
++void TrkBar::Create(InfoBarService *svc, const GURL &url)
 +{
-+	s->AddInfoBar(s->CreateConfirmInfoBar(
-+		std::unique_ptr<ConfirmInfoBarDelegate>(new TrkBar(url))
-+	));
++	std::unique_ptr<ConfirmInfoBarDelegate> tb(new TrkBar(url));
++	auto ib = svc->CreateConfirmInfoBar(std::move(tb));
++	svc->AddInfoBar(std::move(ib), true);
 +}
 +
 +bool TrkBar::ShouldExpire(const NavigationDetails &) const
@@ -314,97 +251,126 @@ index 0000000000000..16013abaf19b9
 +	return false;
 +}
 +
++bool TrkBar::EqualsDelegate(infobars::InfoBarDelegate *ov) const
++{
++	/*
++	 * Make each TrkBar considered equal to any other TrkBar for
++	 * the purposes of AddInfoBar(,replace:true).
++	 */
++	return ov->GetIdentifier() == TRACKING_ALERT_INFOBAR_DELEGATE;
++}
++
 +TrkBar::TrkBar(const GURL &url) :
 +	ConfirmInfoBarDelegate(), m_url(url)
-+{
-+}
++{}
 +
 +base::string16 TrkBar::GetMessageText(void) const
 +{
 +	return base::ASCIIToUTF16("Loading traced URL: " + m_url.spec());
 +}
 +
-+int TrkBar::GetButtons(void) const
++int TrkBar::GetButtons() const
 +{
 +	return BUTTON_NONE;
 +}
 +
-+infobars::InfoBarDelegate::InfoBarIdentifier TrkBar::GetIdentifier(void) const
++infobars::InfoBarDelegate::InfoBarIdentifier TrkBar::GetIdentifier() const
 +{
 +	return TRACKING_ALERT_INFOBAR_DELEGATE;
 +}
 +
-+}; /* namespace content */
-diff --git iridium/trkbar.h iridium/trkbar.h
-new file mode 100644
-index 0000000000000..b251feca039b6
---- /dev/null
-+++ iridium/trkbar.h
-@@ -0,0 +1,33 @@
-+/*
-+ * Copyright 2015 The Iridium Authors.
-+ *
-+ * Use of this source code is governed by a BSD-style license that can be
-+ * found in the LICENSE file.
-+ */
-+#ifndef IRIDIUM_TRKBAR_H
-+#define IRIDIUM_TRKBAR_H 1
-+
-+#include "chrome/browser/infobars/infobar_service.h"
-+#include "components/infobars/core/confirm_infobar_delegate.h"
-+#include "url/gurl.h"
-+
-+namespace content {
-+
-+class TrkBar : public ConfirmInfoBarDelegate {
-+	public:
-+	static void Create(InfoBarService *, const GURL &);
-+	bool ShouldExpire(const NavigationDetails &) const override;
-+
-+	private:
-+	TrkBar(const GURL &);
-+	base::string16 GetMessageText(void) const override;
-+	int GetButtons(void) const override;
-+	infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier(void) const override;
-+
-+	GURL m_url;
-+	DISALLOW_COPY_AND_ASSIGN(TrkBar);
-+};
-+
-+}; /* namespace content */
-+
-+#endif /* IRIDIUM_TRKBAR_H */
-diff --git iridium/trknotify.cpp iridium/trknotify.cpp
-new file mode 100644
-index 0000000000000..7ed71676f92a9
---- /dev/null
-+++ iridium/trknotify.cpp
-@@ -0,0 +1,62 @@
-+/*
-+ * Copyright 2015 The Iridium Authors.
-+ *
-+ * Use of this source code is governed by a BSD-style license that can be
-+ * found in the LICENSE file.
-+ */
-+#include <cstdio>
-+#ifdef __linux__
-+#	include <unistd.h>
-+#endif
-+#include "base/task/post_task.h"
-+#include "base/task/task_traits.h"
-+#include "chrome/browser/infobars/infobar_service.h"
-+#include "chrome/browser/ui/browser.h"
-+#include "chrome/browser/ui/browser_finder.h"
-+#include "chrome/browser/ui/tabs/tab_strip_model.h"
-+#include "content/public/browser/browser_thread.h"
-+#include "content/public/browser/browser_task_traits.h"
-+#include "url/url_constants.h"
-+#include "iridium/trkbar.h"
-+#include "iridium/trknotify.h"
+ }  // namespace content
 +
 +namespace iridium {
 +
-+void log_url_request(const std::string &caller, const GURL &url)
++static void gfxlog_request2(const std::string &caller, const GURL &url)
++{
++	auto browser = chrome::FindLastActive();
++	if (browser == nullptr)
++		return;
++	auto svc = InfoBarService::FromWebContents(browser->tab_strip_model()->GetActiveWebContents());
++	content::TrkBar::Create(svc, url);
++}
++
++void gfxlog_request(const char *caller, const GURL &url)
++{
++	textlog_request(caller, url);
++	if (url.scheme() != url::kTraceScheme || !url.is_trq())
++		return;
++	auto e = content::GetUIThreadTaskRunner({});
++	if (e != nullptr)
++		e->PostTask(FROM_HERE, base::Bind(&gfxlog_request2,
++			std::string(caller), GURL(url)));
++}
++
++static struct log_install {
++	log_install() { iridium::log_request = gfxlog_request; }
++} log_installer;
++
++}
+diff --git content/browser/child_process_security_policy_impl.cc content/browser/child_process_security_policy_impl.cc
+index 5dea9c7ab461..d4ea69f938ff 100644
+--- content/browser/child_process_security_policy_impl.cc
++++ content/browser/child_process_security_policy_impl.cc
+@@ -780,6 +780,7 @@ ChildProcessSecurityPolicyImpl::ChildProcessSecurityPolicyImpl() {
+   RegisterPseudoScheme(url::kJavaScriptScheme);
+   RegisterPseudoScheme(kViewSourceScheme);
+   RegisterPseudoScheme(kGoogleChromeScheme);
++  RegisterPseudoScheme(url::kTraceScheme);
+ }
+ 
+ ChildProcessSecurityPolicyImpl::~ChildProcessSecurityPolicyImpl() {
+diff --git content/browser/scheduler/browser_task_executor.cc content/browser/scheduler/browser_task_executor.cc
+index 8f594bfe2614..5f2616fe710c 100644
+--- content/browser/scheduler/browser_task_executor.cc
++++ content/browser/scheduler/browser_task_executor.cc
+@@ -149,6 +149,7 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
+     case base::TaskPriority::USER_BLOCKING:
+       return QueueType::kUserBlocking;
+   }
++  printf("UNREACHED prio %d\n", traits.priority());
+ }
+ 
+ BrowserTaskExecutor::BrowserTaskExecutor(
+@@ -195,6 +196,8 @@ void BrowserTaskExecutor::CreateInternal(
+   g_browser_task_executor =
+       new BrowserTaskExecutor(std::move(browser_ui_thread_scheduler),
+                               std::move(browser_io_thread_delegate));
++  printf("new browser task executor this%p.%p pid %d\n",
++  	nullptr, (void*)g_browser_task_executor, getpid());
+   base::RegisterTaskExecutor(BrowserTaskTraitsExtension::kExtensionId,
+                              g_browser_task_executor);
+ 
+@@ -225,6 +228,7 @@ void BrowserTaskExecutor::ResetForTesting() {
+     RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);
+     base::UnregisterTaskExecutorForTesting(
+         BrowserTaskTraitsExtension::kExtensionId);
++    printf("taskexecutor %p.%p delted\n", nullptr, (void*)g_browser_task_executor);
+     delete g_browser_task_executor;
+     g_browser_task_executor = nullptr;
+   }
+diff --git net/url_request/url_request.cc net/url_request/url_request.cc
+index b8409e807489..08b926bbb8e6 100644
+--- net/url_request/url_request.cc
++++ net/url_request/url_request.cc
+@@ -5,6 +5,10 @@
+ #include "net/url_request/url_request.h"
+ 
+ #include <utility>
++#include <cstdio>
++#ifdef __unix__
++#	include <unistd.h>
++#endif
+ 
+ #include "base/bind.h"
+ #include "base/callback.h"
+@@ -44,6 +48,33 @@
+ using base::Time;
+ using std::string;
+ 
++namespace iridium {
++
++void textlog_request(const char *caller, const GURL &url)
 +{
 +#ifdef __linux__
 +	bool tty = isatty(fileno(stderr));
@@ -417,108 +383,83 @@ index 0000000000000..7ed71676f92a9
 +	const char *xreset = tty ? "\033[0m"       : ""; // ]
 +
 +	if (url.scheme() == url::kTraceScheme)
-+		fprintf(stderr, "%s*** %s(%s)%s\n", xred, caller.c_str(),
++		fprintf(stderr, "%s*** %s(%s)%s\n", xred, caller,
 +		        url.possibly_invalid_spec().c_str(), xreset);
 +	else
 +		fprintf(stderr, "%s***%s %s(%s)%s\n", xfruit, xdark,
-+		        caller.c_str(), url.possibly_invalid_spec().c_str(),
++		        caller, url.possibly_invalid_spec().c_str(),
 +		        xreset);
 +}
 +
-+static void __trace_url_request(const std::string &caller, const GURL &url)
-+{
-+	auto browser = chrome::FindLastActive();
-+	if (browser == NULL)
-+		return;
++void (*log_request)(const char *, const GURL &) = textlog_request;
 +
-+	auto service = InfoBarService::FromWebContents(browser->tab_strip_model()->GetActiveWebContents());
-+	content::TrkBar::Create(service, url);
 +}
 +
-+void trace_url_request(const std::string &caller, const GURL &url)
-+{
-+	base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-+		base::Bind(&__trace_url_request, caller, url));
-+}
-+
-+}; /* namespace iridium */
-diff --git iridium/trknotify.h iridium/trknotify.h
-new file mode 100644
-index 0000000000000..3c58d22a44265
---- /dev/null
-+++ iridium/trknotify.h
-@@ -0,0 +1,20 @@
-+/*
-+ * Copyright 2015 The Iridium Authors.
-+ *
-+ * Use of this source code is governed by a BSD-style license that can be
-+ * found in the LICENSE file.
-+ */
-+#ifndef IRIDIUM_TRKNOTIFY_H
-+#define IRIDIUM_TRKNOTIFY_H 1
-+
-+#include <string>
-+#include "url/gurl.h"
-+
-+namespace iridium {
-+
-+extern void log_url_request(const std::string &, const GURL &);
-+extern void trace_url_request(const std::string &, const GURL &);
-+
-+}; /* namespace iridium */
-+
-+#endif /* IRIDIUM_TRKNOTIFY_H */
-diff --git net/url_request/url_request.cc net/url_request/url_request.cc
-index cbed158f16b92..68801addc436c 100644
---- net/url_request/url_request.cc
-+++ net/url_request/url_request.cc
-@@ -46,6 +46,8 @@ using std::string;
- 
  namespace net {
  
-+void (*trace_urlreq_cb)(const std::string &, const GURL &);
-+
  namespace {
- 
- // True once the first URLRequest was started.
-@@ -562,6 +564,10 @@ URLRequest::URLRequest(const GURL& url,
+@@ -566,6 +597,10 @@ URLRequest::URLRequest(const GURL& url,
    // Sanity check out environment.
    DCHECK(base::ThreadTaskRunnerHandle::IsSet());
  
-+	if (trace_urlreq_cb != NULL)
-+		(*trace_urlreq_cb)("URLRequest", url);
++	/* network runs in a separate process with no graphics */
++	iridium::textlog_request("URLRequest", url);
 +	if (url.scheme() == url::kTraceScheme)
 +		url_chain_[0] = url.strip_trk();
    context->url_requests()->insert(this);
    net_log_.BeginEvent(NetLogEventType::REQUEST_ALIVE, [&] {
      return NetLogURLRequestConstructorParams(url, priority_,
 diff --git net/url_request/url_request.h net/url_request/url_request.h
-index 643ab4ae8f0e4..6400ff347cd56 100644
+index eed0ae918a0c..28781a9873e8 100644
 --- net/url_request/url_request.h
 +++ net/url_request/url_request.h
-@@ -978,6 +978,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
-   DISALLOW_COPY_AND_ASSIGN(URLRequest);
- };
+@@ -48,6 +48,11 @@
+ #include "url/gurl.h"
+ #include "url/origin.h"
  
-+extern void NET_EXPORT (*trace_urlreq_cb)(const std::string &, const GURL &);
++namespace iridium {
++extern void textlog_request(const char *caller, const GURL &);
++extern void (*log_request)(const char *, const GURL &);
++}
 +
- }  // namespace net
+ namespace base {
+ class Value;
+ }  // namespace base
+diff --git services/network/public/cpp/simple_url_loader.cc services/network/public/cpp/simple_url_loader.cc
+index 779be1f9b97e..65aee5dae09c 100644
+--- services/network/public/cpp/simple_url_loader.cc
++++ services/network/public/cpp/simple_url_loader.cc
+@@ -37,6 +37,7 @@
+ #include "net/base/request_priority.h"
+ #include "net/http/http_request_headers.h"
+ #include "net/traffic_annotation/network_traffic_annotation.h"
++#include "net/url_request/url_request.h"
+ #include "services/network/public/cpp/data_element.h"
+ #include "services/network/public/cpp/resource_request.h"
+ #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
+@@ -1507,6 +1508,8 @@ void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
+   DCHECK(!url_loader_);
+   DCHECK(!request_state_->body_started);
  
- #endif  // NET_URL_REQUEST_URL_REQUEST_H_
++  iridium::log_request("SimpleURLLoaderImpl", resource_request_->url);
++
+   // If retries are enabled, stash the information needed to retry a request.
+   if (remaining_retries_ > 0) {
+     // Clone the URLLoaderFactory, to avoid any dependencies on its lifetime.
 diff --git tools/metrics/histograms/enums.xml tools/metrics/histograms/enums.xml
-index c394f02fb8d81..2b143cad1c460 100644
+index 321936210275..26b54906d296 100644
 --- tools/metrics/histograms/enums.xml
 +++ tools/metrics/histograms/enums.xml
-@@ -35330,6 +35330,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
-   <int value="98" label="MIXED_CONTENT_DOWNLOAD_INFOBAR_DELEGATE_ANDROID"/>
-   <int value="99" label="CONDITIONAL_TAB_STRIP_INFOBAR_ANDROID"/>
-   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
+@@ -37798,6 +37798,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
+   <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC"/>
+   <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS"/>
+   <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE"/>
 +  <int value="9001" label="TRACKING_ALERT_INFOBAR_DELEGATE"/>
  </enum>
  
  <enum name="InfoBarResponse">
 diff --git url/gurl.cc url/gurl.cc
-index 9f4698fb0e4e8..d0755c75c35b9 100644
+index b94bb80d3db9..0415b0736e2c 100644
 --- url/gurl.cc
 +++ url/gurl.cc
 @@ -502,6 +502,41 @@ bool GURL::IsAboutUrl(base::StringPiece allowed_path) const {
@@ -564,7 +505,7 @@ index 9f4698fb0e4e8..d0755c75c35b9 100644
    return out << url.possibly_invalid_spec();
  }
 diff --git url/gurl.h url/gurl.h
-index 9b6449b7c0102..1f9ec68effa30 100644
+index 9b6449b7c010..1f9ec68effa3 100644
 --- url/gurl.h
 +++ url/gurl.h
 @@ -434,6 +434,9 @@ class COMPONENT_EXPORT(URL) GURL {
@@ -587,7 +528,7 @@ index 9b6449b7c0102..1f9ec68effa30 100644
  COMPONENT_EXPORT(URL) bool operator==(const GURL& x, const GURL& y);
  COMPONENT_EXPORT(URL) bool operator!=(const GURL& x, const GURL& y);
 diff --git url/url_constants.cc url/url_constants.cc
-index 69399e420045f..23b8312deb6af 100644
+index 69399e420045..23b8312deb6a 100644
 --- url/url_constants.cc
 +++ url/url_constants.cc
 @@ -28,6 +28,7 @@ const char kMailToScheme[] = "mailto";
@@ -599,7 +540,7 @@ index 69399e420045f..23b8312deb6af 100644
  const char kWssScheme[] = "wss";
  
 diff --git url/url_constants.h url/url_constants.h
-index f5a33dd813571..202dd8d4e1a15 100644
+index f5a33dd81357..202dd8d4e1a1 100644
 --- url/url_constants.h
 +++ url/url_constants.h
 @@ -34,6 +34,7 @@ COMPONENT_EXPORT(URL) extern const char kQuicTransportScheme[];
@@ -611,5 +552,5 @@ index f5a33dd813571..202dd8d4e1a15 100644
  // Used to separate a standard scheme and the hostname: "://".
  COMPONENT_EXPORT(URL) extern const char kStandardSchemeSeparator[];
 -- 
-2.29.1
+2.30.1
 

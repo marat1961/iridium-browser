@@ -1,0 +1,27 @@
+From cf8d0762cd0e15d7b6bdbbbba7bbe49bca2e5b21 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Mon, 1 Mar 2021 10:14:38 +0100
+Subject: [PATCH 23/79] GFA chromium-88-vaapi-attribute.patch
+
+---
+ media/gpu/vaapi/vaapi_wrapper.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git media/gpu/vaapi/vaapi_wrapper.h media/gpu/vaapi/vaapi_wrapper.h
+index fd1fd823ee1e..deeda1f0e4bc 100644
+--- media/gpu/vaapi/vaapi_wrapper.h
++++ media/gpu/vaapi/vaapi_wrapper.h
+@@ -318,8 +318,8 @@ class MEDIA_GPU_EXPORT VaapiWrapper
+   // Convenient templatized version of SubmitBuffer() where |size| is deduced to
+   // be the size of the type of |*data|.
+   template <typename T>
+-  bool SubmitBuffer(VABufferType va_buffer_type,
+-                    const T* data) WARN_UNUSED_RESULT {
++  bool WARN_UNUSED_RESULT SubmitBuffer(VABufferType va_buffer_type,
++                                       const T* data) {
+     return SubmitBuffer(va_buffer_type, sizeof(T), data);
+   }
+   // Batch-version of SubmitBuffer(), where the lock for accessing libva is
+-- 
+2.30.1
+

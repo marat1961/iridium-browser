@@ -1,0 +1,24 @@
+From 2766edcef9709ba3b212c6f7fa2116007931fe8a Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Thu, 4 Mar 2021 17:08:27 +0100
+Subject: [PATCH 25/79] GFA chromium-87-webcodecs-deps.patch
+
+---
+ third_party/blink/renderer/modules/webcodecs/BUILD.gn | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git third_party/blink/renderer/modules/webcodecs/BUILD.gn third_party/blink/renderer/modules/webcodecs/BUILD.gn
+index b4090bd22c07..16268e4c326a 100644
+--- third_party/blink/renderer/modules/webcodecs/BUILD.gn
++++ third_party/blink/renderer/modules/webcodecs/BUILD.gn
+@@ -54,6 +54,7 @@ blink_modules_sources("webcodecs") {
+     "//media/mojo/clients",
+     "//media/mojo/mojom",
+     "//third_party/libyuv:libyuv",
++    "//third_party/openh264:encoder",
+   ]
+   public_deps = [
+     "//third_party/blink/renderer/modules/mediastream:mediastream",
+-- 
+2.30.1
+
