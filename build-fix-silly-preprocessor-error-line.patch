@@ -1,7 +1,7 @@
-From ed4b9c58cfb272e35dd20176b314b042142ca655 Mon Sep 17 00:00:00 2001
+From 853cdd6d8667a19abf79444cda1d4eaa0102b068 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 19 Nov 2020 09:54:20 +0100
-Subject: [PATCH 61/79] build: fix silly preprocessor error line
+Subject: [PATCH 54/73] build: fix silly preprocessor error line
 
 ui/aura/window.h:45:67: warning: missing terminating ' character
    45 | #error This file must not be included on macOS; Chromium Mac doesn't use Aura.
@@ -10,10 +10,10 @@ ui/aura/window.h:45:67: warning: missing terminating ' character
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git ui/aura/window.h ui/aura/window.h
-index 2dfa559ca078..966943f49da2 100644
+index d303446985150..3eb512cd411ed 100644
 --- ui/aura/window.h
 +++ ui/aura/window.h
-@@ -42,7 +42,7 @@
+@@ -43,7 +43,7 @@
  #include "ui/gfx/native_widget_types.h"
  
  #if defined(OS_APPLE)
@@ -23,5 +23,5 @@ index 2dfa559ca078..966943f49da2 100644
  
  namespace cc {
 -- 
-2.30.1
+2.32.0
 

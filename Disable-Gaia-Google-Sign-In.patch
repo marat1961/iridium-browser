@@ -1,27 +1,28 @@
-From 2c0a4f70540515ed09272e8d07938c477b0f83c8 Mon Sep 17 00:00:00 2001
+From 0fa50740904ba04d948b6d4c3b6aa38e95f32564 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Mon, 30 Sep 2019 11:44:46 +0200
-Subject: [PATCH 77/79] Disable Gaia (Google Sign In)
+Subject: [PATCH 70/73] Disable Gaia (Google Sign In)
 
 ---
- .../privacy_page/personalization_options.html         | 11 -----------
- .../signin/account_consistency_mode_manager.cc        |  2 +-
- chrome/browser/ui/views/toolbar/toolbar_view.cc       |  2 +-
- .../identity_manager/primary_account_manager.cc       |  2 +-
- google_apis/gaia/gaia_auth_fetcher.cc                 |  8 ++++++--
- 5 files changed, 9 insertions(+), 16 deletions(-)
+ .../privacy_page/personalization_options.html        | 12 ------------
+ .../signin/account_consistency_mode_manager.cc       |  2 +-
+ chrome/browser/ui/views/toolbar/toolbar_view.cc      |  2 +-
+ .../identity_manager/primary_account_manager.cc      |  2 +-
+ google_apis/gaia/gaia_auth_fetcher.cc                |  8 ++++++--
+ 5 files changed, 9 insertions(+), 17 deletions(-)
 
 diff --git chrome/browser/resources/settings/privacy_page/personalization_options.html chrome/browser/resources/settings/privacy_page/personalization_options.html
-index 350712a350e7..81576b457d91 100644
+index 70eeec029bfbf..09cf21fd688df 100644
 --- chrome/browser/resources/settings/privacy_page/personalization_options.html
 +++ chrome/browser/resources/settings/privacy_page/personalization_options.html
-@@ -35,17 +35,6 @@
+@@ -8,18 +8,6 @@
          border-top: none;
        }
      </style>
 -<if expr="not chromeos">
 -    <settings-toggle-button id="signinAllowedToggle"
 -        class="hr"
+-        hidden="[[!signinAvailable_]]"
 -        disabled="[[syncFirstSetupInProgress_]]"
 -        pref="{{prefs.signin.allowed_on_next_startup}}"
 -        label="$i18n{signinAllowedTitle}"
@@ -34,7 +35,7 @@ index 350712a350e7..81576b457d91 100644
          class="hr"
          hidden="[[!pageVisibility.searchPrediction]]"
 diff --git chrome/browser/signin/account_consistency_mode_manager.cc chrome/browser/signin/account_consistency_mode_manager.cc
-index 8c0099eef030..33f91be31f5f 100644
+index 539411d63fba3..40e28c2229c63 100644
 --- chrome/browser/signin/account_consistency_mode_manager.cc
 +++ chrome/browser/signin/account_consistency_mode_manager.cc
 @@ -118,7 +118,7 @@ void AccountConsistencyModeManager::RegisterProfilePrefs(
@@ -47,23 +48,23 @@ index 8c0099eef030..33f91be31f5f 100644
  
  // static
 diff --git chrome/browser/ui/views/toolbar/toolbar_view.cc chrome/browser/ui/views/toolbar/toolbar_view.cc
-index 058a014e6429..4b61c6465b11 100644
+index 5f6e182d017d9..9175809a255e4 100644
 --- chrome/browser/ui/views/toolbar/toolbar_view.cc
 +++ chrome/browser/ui/views/toolbar/toolbar_view.cc
-@@ -240,7 +240,7 @@ void ToolbarView::Init() {
+@@ -250,7 +250,7 @@ void ToolbarView::Init() {
  
    std::unique_ptr<ToolbarAccountIconContainerView>
        toolbar_account_icon_container;
 -  bool show_avatar_toolbar_button = true;
 +  bool show_avatar_toolbar_button = false;
- #if defined(OS_CHROMEOS)
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (!base::FeatureList::IsEnabled(chromeos::features::kAvatarToolbarButton)) {
      // ChromeOS only badges Incognito and Guest icons in the browser window.
 diff --git components/signin/internal/identity_manager/primary_account_manager.cc components/signin/internal/identity_manager/primary_account_manager.cc
-index 8f5528f06c98..a07ded2651e9 100644
+index 332632058a71b..33a367f55c1c6 100644
 --- components/signin/internal/identity_manager/primary_account_manager.cc
 +++ components/signin/internal/identity_manager/primary_account_manager.cc
-@@ -57,7 +57,7 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+@@ -55,7 +55,7 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
    registry->RegisterBooleanPref(prefs::kGoogleServicesConsentedToSync, false);
    registry->RegisterBooleanPref(prefs::kAutologinEnabled, true);
    registry->RegisterListPref(prefs::kReverseAutologinRejectedEmailList);
@@ -73,7 +74,7 @@ index 8f5528f06c98..a07ded2651e9 100644
  }
  
 diff --git google_apis/gaia/gaia_auth_fetcher.cc google_apis/gaia/gaia_auth_fetcher.cc
-index 3131c0581f85..d746b1666c36 100644
+index e71393a87c715..267cb16ff0e0c 100644
 --- google_apis/gaia/gaia_auth_fetcher.cc
 +++ google_apis/gaia/gaia_auth_fetcher.cc
 @@ -243,7 +243,9 @@ GaiaAuthFetcher::GaiaAuthFetcher(
@@ -99,5 +100,5 @@ index 3131c0581f85..d746b1666c36 100644
  GaiaAuthFetcher::~GaiaAuthFetcher() {}
  
 -- 
-2.30.1
+2.32.0
 

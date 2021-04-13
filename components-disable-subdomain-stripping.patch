@@ -1,7 +1,7 @@
-From 24de5ea01bfddc9203eefb5647d3650fa75dcf26 Mon Sep 17 00:00:00 2001
+From b5559262d133e862c091628e4fd3ae962d088cbf Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Fri, 9 Nov 2018 11:31:17 +0100
-Subject: [PATCH 72/79] components: disable subdomain stripping
+Subject: [PATCH 65/73] components: disable subdomain stripping
 
 https://www.bleepingcomputer.com/news/security/chrome-69-shows-the-www-and-m-subdomains-again-but-it-s-only-temporary/
 ---
@@ -9,18 +9,18 @@ https://www.bleepingcomputer.com/news/security/chrome-69-shows-the-www-and-m-sub
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git components/omnibox/common/omnibox_features.cc components/omnibox/common/omnibox_features.cc
-index 66f22191bfe6..3c8c1ec1e133 100644
+index d4230a73775ff..0e779d58ee661 100644
 --- components/omnibox/common/omnibox_features.cc
 +++ components/omnibox/common/omnibox_features.cc
-@@ -55,7 +55,7 @@ const base::Feature kHideFileUrlScheme{
+@@ -56,7 +56,7 @@ const base::Feature kHideFileUrlScheme{
      "OmniboxUIExperimentHideFileUrlScheme",
      // Android and iOS don't have the File security chip, and therefore still
      // need to show the file scheme.
 -    enabled_by_default_desktop_only};
 +    base::FEATURE_DISABLED_BY_DEFAULT};
  
- // Feature used to enable matching short words to bookmarks for suggestions.
- const base::Feature kOmniboxShortBookmarkSuggestions{
+ // Feature used to force on the experiment of transmission of tail suggestions
+ // from GWS to this client, currently testing for desktop.
 -- 
-2.30.1
+2.32.0
 

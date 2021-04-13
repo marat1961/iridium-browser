@@ -1,21 +1,21 @@
-From 93519f6d6ff4918e355bcbbae8a4ebcb1db668dc Mon Sep 17 00:00:00 2001
+From a53211f34054099c4a136db63f715472e677c6bc Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Mon, 26 Jan 2015 13:57:44 +0100
-Subject: [PATCH 56/79] src: use cached copy of safebrowsing lists at
+Subject: [PATCH 50/73] src: use cached copy of safebrowsing lists at
  iridiumbrowser.de
 
 To avoid contacing Google, let the UA use safebrowsing lists hosted at
 iridiumbrowser. The Iridium project re-gathers these lists on a
 regular basis.
 ---
- chrome/browser/safe_browsing/client_side_model_loader.cc | 2 +-
+ .../safe_browsing/content/browser/client_side_model_loader.cc   | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git chrome/browser/safe_browsing/client_side_model_loader.cc chrome/browser/safe_browsing/client_side_model_loader.cc
-index ddf7337ca74f..70818e7af803 100644
---- chrome/browser/safe_browsing/client_side_model_loader.cc
-+++ chrome/browser/safe_browsing/client_side_model_loader.cc
-@@ -60,7 +60,7 @@ std::string ReadFileIntoString(base::FilePath path) {
+diff --git components/safe_browsing/content/browser/client_side_model_loader.cc components/safe_browsing/content/browser/client_side_model_loader.cc
+index 202dec71661d0..26e53af188907 100644
+--- components/safe_browsing/content/browser/client_side_model_loader.cc
++++ components/safe_browsing/content/browser/client_side_model_loader.cc
+@@ -61,7 +61,7 @@ std::string ReadFileIntoString(base::FilePath path) {
  const size_t ModelLoader::kMaxModelSizeBytes = 150 * 1024;
  const int ModelLoader::kClientModelFetchIntervalMs = 3600 * 1000;
  const char ModelLoader::kClientModelUrlPrefix[] =
@@ -23,7 +23,7 @@ index ddf7337ca74f..70818e7af803 100644
 +    "https://cache.iridiumbrowser.de/";
  const char ModelLoader::kClientModelNamePattern[] =
      "client_model_v5%s_variation_%d.pb";
- const char ModelLoader::kClientModelFinchExperiment[] =
+ #if !BUILDFLAG(FULL_SAFE_BROWSING)
 -- 
-2.30.1
+2.32.0
 

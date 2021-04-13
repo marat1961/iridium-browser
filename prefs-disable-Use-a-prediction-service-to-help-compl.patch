@@ -1,7 +1,7 @@
-From d56786a1a6e604c1a2d98099033cba75a0293f51 Mon Sep 17 00:00:00 2001
+From 546b91068affdade9cb4aab598d3f1b08f4ca929 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 13 Sep 2014 15:06:39 +0200
-Subject: [PATCH 41/79] prefs: disable "Use a prediction service to help
+Subject: [PATCH 35/73] prefs: disable "Use a prediction service to help
  complete searches..."
 
 This autocomplete service would send search queries as soon as you
@@ -16,10 +16,10 @@ Set suggest_enabled to false by default.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git chrome/browser/profiles/profile.cc chrome/browser/profiles/profile.cc
-index 103c8c04b728..d450c5370801 100644
+index 94aafe60eb458..cdae747c66875 100644
 --- chrome/browser/profiles/profile.cc
 +++ chrome/browser/profiles/profile.cc
-@@ -277,7 +277,7 @@ const char Profile::kProfileKey[] = "__PROFILE__";
+@@ -265,7 +265,7 @@ const char Profile::kProfileKey[] = "__PROFILE__";
  void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
    registry->RegisterBooleanPref(
        prefs::kSearchSuggestEnabled,
@@ -29,5 +29,5 @@ index 103c8c04b728..d450c5370801 100644
  #if defined(OS_ANDROID)
    registry->RegisterStringPref(
 -- 
-2.30.1
+2.32.0
 

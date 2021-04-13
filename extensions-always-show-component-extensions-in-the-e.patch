@@ -1,7 +1,7 @@
-From 92000e50b1857ff30c02e3e69898db1718b52d0e Mon Sep 17 00:00:00 2001
+From 808d113a9da4ef7ca8ab04359ac0b4db2c8c850a Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 25 Jun 2015 15:34:10 +0200
-Subject: [PATCH 69/79] extensions: always show component extensions in the ext
+Subject: [PATCH 62/73] extensions: always show component extensions in the ext
  list
 
 The attached patch makes sure that component extensions are always
@@ -18,10 +18,10 @@ References: https://github.com/iridium-browser/iridium-browser/issues/28
  1 file changed, 3 insertions(+)
 
 diff --git extensions/common/extension.cc extensions/common/extension.cc
-index b0b72345c02e..0dfb65ec09ae 100644
+index 98b7513924ea0..226f71496ed48 100644
 --- extensions/common/extension.cc
 +++ extensions/common/extension.cc
-@@ -378,9 +378,12 @@ bool Extension::ShouldDisplayInNewTabPage() const {
+@@ -423,9 +423,12 @@ bool Extension::ShouldDisplayInNewTabPage() const {
  }
  
  bool Extension::ShouldExposeViaManagementAPI() const {
@@ -35,5 +35,5 @@ index b0b72345c02e..0dfb65ec09ae 100644
  
  Extension::ManifestData* Extension::GetManifestData(const std::string& key)
 -- 
-2.30.1
+2.32.0
 

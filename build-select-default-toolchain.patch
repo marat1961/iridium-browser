@@ -1,7 +1,7 @@
-From 5a37e616ad7c6e4d42ebd2e6e4d3185316497083 Mon Sep 17 00:00:00 2001
+From 278404f422d89638c99ff41c67b7dfc00f70b15c Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 20 Apr 2017 17:03:14 +0200
-Subject: [PATCH 02/79] build: select default toolchain
+Subject: [PATCH 02/73] build: select default toolchain
 
 (Patch used from openSUSE.)
 
@@ -27,7 +27,7 @@ that would be magnificient.
 
 diff --git toolchain/BUILD.gn toolchain/BUILD.gn
 new file mode 100644
-index 000000000000..052c0b3f305a
+index 0000000000000..052c0b3f305a9
 --- /dev/null
 +++ toolchain/BUILD.gn
 @@ -0,0 +1,19 @@
@@ -51,5 +51,5 @@ index 000000000000..052c0b3f305a
 +  }
 +}
 -- 
-2.30.1
+2.32.0
 

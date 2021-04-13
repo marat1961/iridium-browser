@@ -1,7 +1,7 @@
-From 1bb24a52202cbe9a936d23940c59adf288645114 Mon Sep 17 00:00:00 2001
+From 6370fe267648ca97f608c2f4ac1512d1d624b4d0 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 19 Oct 2014 14:49:10 +0200
-Subject: [PATCH 51/79] search_engines: add DuckDuckGo as selectable and
+Subject: [PATCH 45/73] search_engines: add DuckDuckGo as selectable and
  default search engine
 
 The default default's seem to default to index 0 in the
@@ -12,7 +12,7 @@ prepending &duckduckgo yields the desired result, for now at least.
  1 file changed, 108 insertions(+), 57 deletions(-)
 
 diff --git components/search_engines/template_url_prepopulate_data.cc components/search_engines/template_url_prepopulate_data.cc
-index 150b548b368d..7c44b0b531ed 100644
+index 150b548b368dc..7c44b0b531ed2 100644
 --- components/search_engines/template_url_prepopulate_data.cc
 +++ components/search_engines/template_url_prepopulate_data.cc
 @@ -29,6 +29,7 @@ namespace {
@@ -994,5 +994,5 @@ index 150b548b368d..7c44b0b531ed 100644
      &bing,
      &yahoo,
 -- 
-2.30.1
+2.32.0
 

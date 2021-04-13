@@ -1,17 +1,17 @@
-From 06c519fdce1d18c138f93704f4cf00e3647a50fa Mon Sep 17 00:00:00 2001
+From 49beee0c91eb1d8f5bbf4933fc47f21a224e7d99 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 25 Jun 2015 15:51:59 +0200
-Subject: [PATCH 68/79] browser: disable profile auto-import on first run
+Subject: [PATCH 61/73] browser: disable profile auto-import on first run
 
 ---
  chrome/browser/chrome_browser_main.cc | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git chrome/browser/chrome_browser_main.cc chrome/browser/chrome_browser_main.cc
-index 64da51339475..a2a8e0a76e5b 100644
+index 576a121029342..12f019d5b7143 100644
 --- chrome/browser/chrome_browser_main.cc
 +++ chrome/browser/chrome_browser_main.cc
-@@ -1437,7 +1437,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
+@@ -1461,7 +1461,9 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
    // and preferences have been registered since some of the import code depends
    // on preferences.
    if (first_run::IsChromeFirstRun()) {
@@ -22,5 +22,5 @@ index 64da51339475..a2a8e0a76e5b 100644
      // Note: This can pop-up the first run consent dialog on Linux & Mac.
      first_run::DoPostImportTasks(profile_,
 -- 
-2.30.1
+2.32.0
 

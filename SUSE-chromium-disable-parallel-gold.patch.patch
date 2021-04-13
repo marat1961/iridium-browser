@@ -1,17 +1,17 @@
-From a976644df90f19955c152ff1c1ff89acca75d006 Mon Sep 17 00:00:00 2001
+From 5148ad6ff001dcf8dff2fec26ad4e2f8813171a6 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Wed, 18 Nov 2020 12:29:01 +0100
-Subject: [PATCH 14/79] SUSE chromium-disable-parallel-gold.patch
+Subject: [PATCH 13/73] SUSE chromium-disable-parallel-gold.patch
 
 ---
  build/config/compiler/BUILD.gn | 2 --
  1 file changed, 2 deletions(-)
 
 diff --git build/config/compiler/BUILD.gn build/config/compiler/BUILD.gn
-index 9d66490cdb55..6da9e65ec991 100644
+index 72ea590d69681..e56f5593fd772 100644
 --- build/config/compiler/BUILD.gn
 +++ build/config/compiler/BUILD.gn
-@@ -421,8 +421,6 @@ config("compiler") {
+@@ -461,8 +461,6 @@ config("compiler") {
          # https://groups.google.com/a/chromium.org/group/chromium-dev/browse_thread/thread/281527606915bb36
          # Only apply this to the target linker, since the host
          # linker might not be gold, but isn't used much anyway.
@@ -21,5 +21,5 @@ index 9d66490cdb55..6da9e65ec991 100644
      }
  
 -- 
-2.30.1
+2.32.0
 

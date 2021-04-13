@@ -1,16 +1,16 @@
-From d3a3f24d07a71df77561422295ff12e7a7a82653 Mon Sep 17 00:00:00 2001
+From 20bb1e5e27c04fc1a006f9aadb42eded376fa7a0 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 28 Feb 2021 14:58:18 +0100
-Subject: [PATCH 05/79] Set build name
+Subject: [PATCH 05/73] Set build name
 
 ---
  chrome/app/theme/chromium/BRANDING | 14 +++++++-------
- chrome/common/chrome_constants.cc  |  4 ++--
+ chrome/common/chrome_constants.cc  | 10 +---------
  components/version_ui_strings.grdp |  2 +-
- 3 files changed, 10 insertions(+), 10 deletions(-)
+ 3 files changed, 9 insertions(+), 17 deletions(-)
 
 diff --git chrome/app/theme/chromium/BRANDING chrome/app/theme/chromium/BRANDING
-index a2020a0b6f92..b287eb1d009d 100644
+index 90c7f27d06030..b287eb1d009d6 100644
 --- chrome/app/theme/chromium/BRANDING
 +++ chrome/app/theme/chromium/BRANDING
 @@ -1,10 +1,10 @@
@@ -20,7 +20,7 @@ index a2020a0b6f92..b287eb1d009d 100644
 -PRODUCT_SHORTNAME=Chromium
 -PRODUCT_INSTALLER_FULLNAME=Chromium Installer
 -PRODUCT_INSTALLER_SHORTNAME=Chromium Installer
--COPYRIGHT=Copyright 2020 The Chromium Authors. All rights reserved.
+-COPYRIGHT=Copyright 2021 The Chromium Authors. All rights reserved.
 +COMPANY_FULLNAME=The browser authors
 +COMPANY_SHORTNAME=The browser authors
 +PRODUCT_FULLNAME=Iridium
@@ -32,25 +32,28 @@ index a2020a0b6f92..b287eb1d009d 100644
  MAC_CREATOR_CODE=Cr24
  MAC_TEAM_ID=
 diff --git chrome/common/chrome_constants.cc chrome/common/chrome_constants.cc
-index 9fd86d0fef88..6d509f2ed94b 100644
+index 481cc7e000f62..3b96d3f68f6ae 100644
 --- chrome/common/chrome_constants.cc
 +++ chrome/common/chrome_constants.cc
-@@ -11,11 +11,11 @@
+@@ -11,15 +11,7 @@
+ 
  #define FPL FILE_PATH_LITERAL
  
- #if defined(OS_MAC)
--#define CHROMIUM_PRODUCT_STRING "Chromium"
-+#define CHROMIUM_PRODUCT_STRING "Iridium"
- #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
- #define PRODUCT_STRING "Google Chrome"
- #elif BUILDFLAG(CHROMIUM_BRANDING)
+-#if defined(OS_MAC)
+-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+-#define PRODUCT_STRING "Google Chrome"
+-#elif BUILDFLAG(CHROMIUM_BRANDING)
 -#define PRODUCT_STRING "Chromium"
+-#else
+-#error Unknown branding
+-#endif
+-#endif  // defined(OS_MAC)
 +#define PRODUCT_STRING "Iridium"
- #else
- #error Unknown branding
- #endif
+ 
+ namespace chrome {
+ 
 diff --git components/version_ui_strings.grdp components/version_ui_strings.grdp
-index 6fb0de0f346b..34ee63af558f 100644
+index 6fb0de0f346bd..34ee63af558f3 100644
 --- components/version_ui_strings.grdp
 +++ components/version_ui_strings.grdp
 @@ -7,7 +7,7 @@
@@ -63,5 +66,5 @@ index 6fb0de0f346b..34ee63af558f 100644
    <message name="IDS_VERSION_UI_32BIT" desc="32-bit on the chrome://version page">
      (32-bit)
 -- 
-2.30.1
+2.32.0
 

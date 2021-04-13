@@ -1,7 +1,7 @@
-From a3ac3987c02e87a91a5cd6980569e7516534bda3 Mon Sep 17 00:00:00 2001
+From 1785ad7a722fe65f880eeae7dd6c1c80d269c26a Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 6 Sep 2020 20:41:57 +0200
-Subject: [PATCH 11/79] SUSE chromium-norar.patch
+Subject: [PATCH 10/73] SUSE chromium-norar.patch
 
 Do not use unrar code, it is non-free
 ---
@@ -12,7 +12,7 @@ Do not use unrar code, it is non-free
  4 files changed, 4 insertions(+), 35 deletions(-)
 
 diff --git chrome/common/safe_browsing/BUILD.gn chrome/common/safe_browsing/BUILD.gn
-index 5bf115632f8e..6b52e1b18a78 100644
+index 5bf115632f8e2..6b52e1b18a784 100644
 --- chrome/common/safe_browsing/BUILD.gn
 +++ chrome/common/safe_browsing/BUILD.gn
 @@ -43,38 +43,6 @@ if (safe_browsing_mode == 1) {
@@ -63,7 +63,7 @@ index 5bf115632f8e..6b52e1b18a78 100644
      ]
  
 diff --git chrome/common/safe_browsing/DEPS chrome/common/safe_browsing/DEPS
-index c191816456b0..49076ee372c0 100644
+index c191816456b0f..49076ee372c00 100644
 --- chrome/common/safe_browsing/DEPS
 +++ chrome/common/safe_browsing/DEPS
 @@ -1,6 +1,5 @@
@@ -74,11 +74,11 @@ index c191816456b0..49076ee372c0 100644
    "+third_party/zlib",
  ]
 diff --git chrome/services/file_util/BUILD.gn chrome/services/file_util/BUILD.gn
-index 67b098d40518..7636bbbaad6b 100644
+index 2c450f505d6d2..cc8657bb74fc9 100644
 --- chrome/services/file_util/BUILD.gn
 +++ chrome/services/file_util/BUILD.gn
-@@ -15,7 +15,6 @@ source_set("file_util") {
-     "//base",
+@@ -17,7 +17,6 @@ source_set("file_util") {
+     "//build:chromeos_buildflags",
      "//chrome/common/safe_browsing",
      "//chrome/common/safe_browsing:archive_analyzer_results",
 -    "//chrome/common/safe_browsing:rar_analyzer",
@@ -86,7 +86,7 @@ index 67b098d40518..7636bbbaad6b 100644
      "//mojo/public/cpp/bindings",
    ]
 diff --git chrome/services/file_util/safe_archive_analyzer.cc chrome/services/file_util/safe_archive_analyzer.cc
-index 351b32eadf94..7a9d8aa7263f 100644
+index 351b32eadf944..7a9d8aa7263f0 100644
 --- chrome/services/file_util/safe_archive_analyzer.cc
 +++ chrome/services/file_util/safe_archive_analyzer.cc
 @@ -45,10 +45,14 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(base::File dmg_file,
@@ -105,5 +105,5 @@ index 351b32eadf94..7a9d8aa7263f 100644
 +#endif
  }
 -- 
-2.30.1
+2.32.0
 

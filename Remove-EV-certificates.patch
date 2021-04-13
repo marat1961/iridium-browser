@@ -1,7 +1,7 @@
-From 2d32360643c5daa09deede7279359c255e46ace1 Mon Sep 17 00:00:00 2001
+From 1574c4804749ea69a072f3d547d2055e2bee7bf2 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 2 Apr 2015 12:44:23 +0200
-Subject: [PATCH 59/79] Remove EV certificates
+Subject: [PATCH 52/73] Remove EV certificates
 
 The team chose to let EV certificates appear just like normal
 certificates. The web of trust is considered a failure in itself, so
@@ -12,7 +12,7 @@ Instead, let them appear just like regular ones.
  1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git net/cert/ev_root_ca_metadata.cc net/cert/ev_root_ca_metadata.cc
-index 13b5a55d77c1..877997f421e7 100644
+index 13b5a55d77c14..877997f421e71 100644
 --- net/cert/ev_root_ca_metadata.cc
 +++ net/cert/ev_root_ca_metadata.cc
 @@ -41,6 +41,15 @@ struct EVMetadata {
@@ -43,5 +43,5 @@ index 13b5a55d77c1..877997f421e7 100644
  #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
  }  // namespace
 -- 
-2.30.1
+2.32.0
 

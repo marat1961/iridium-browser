@@ -1,16 +1,16 @@
-From ab32dbb6a464f71ffa375a14a214e12c9432eec7 Mon Sep 17 00:00:00 2001
+From 1a4787fea343594038caedcb4cb8ece9a8975859 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 11 Sep 2014 16:37:32 +0200
-Subject: [PATCH 39/79] autofill: disable autofill download manager
+Subject: [PATCH 33/73] autofill: disable autofill download manager
 
 Disables the autofill download manager (trk:158).
 ---
  components/autofill/core/browser/autofill_download_manager.cc | 2 +-
- components/autofill/core/browser/autofill_manager.cc          | 2 ++
+ components/autofill/core/browser/autofill_handler.cc          | 2 ++
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git components/autofill/core/browser/autofill_download_manager.cc components/autofill/core/browser/autofill_download_manager.cc
-index e356433a2f89..074073f42b7e 100644
+index b7fa97bf3b05a..009ba27cb4d06 100644
 --- components/autofill/core/browser/autofill_download_manager.cc
 +++ components/autofill/core/browser/autofill_download_manager.cc
 @@ -96,7 +96,7 @@ const net::BackoffEntry::Policy kAutofillBackoffPolicy = {
@@ -22,24 +22,26 @@ index e356433a2f89..074073f42b7e 100644
  
  // The default number of days after which to reset the registry of autofill
  // events for which an upload has been sent.
-diff --git components/autofill/core/browser/autofill_manager.cc components/autofill/core/browser/autofill_manager.cc
-index 9f4f5f3688e3..48fa7d0417ae 100644
---- components/autofill/core/browser/autofill_manager.cc
-+++ components/autofill/core/browser/autofill_manager.cc
-@@ -1656,11 +1656,13 @@ AutofillManager::AutofillManager(
-                                     : std::make_unique<CreditCardAccessManager>(
-                                           driver, client_, personal_data_,
-                                           credit_card_form_event_logger_.get());
+diff --git components/autofill/core/browser/autofill_handler.cc components/autofill/core/browser/autofill_handler.cc
+index 7e017bd869352..98c23321e316b 100644
+--- components/autofill/core/browser/autofill_handler.cc
++++ components/autofill/core/browser/autofill_handler.cc
+@@ -135,6 +135,7 @@ AutofillHandler::AutofillHandler(
+       log_manager_(client ? client->GetLogManager() : nullptr),
+       form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()),
+       is_rich_query_enabled_(IsRichQueryEnabled(channel)) {
 +#if 0
    if (enable_download_manager == ENABLE_AUTOFILL_DOWNLOAD_MANAGER) {
-     version_info::Channel channel = client_->GetChannel();
-     download_manager_.reset(new AutofillDownloadManager(
-         driver, this, GetAPIKeyForUrl(channel), client_->GetLogManager()));
+     download_manager_ = std::make_unique<AutofillDownloadManager>(
+         driver, this, GetAPIKeyForUrl(channel),
+@@ -142,6 +143,7 @@ AutofillHandler::AutofillHandler(
+             IsRawMetadataUploadingEnabled(channel)),
+         log_manager_);
    }
 +#endif
-   CountryNames::SetLocaleString(app_locale_);
-   offer_manager_ = client_->GetAutofillOfferManager();
- }
+   if (client) {
+     translate::TranslateDriver* translate_driver = client->GetTranslateDriver();
+     if (translate_driver) {
 -- 
-2.30.1
+2.32.0
 

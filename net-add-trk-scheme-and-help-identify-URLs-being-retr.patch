@@ -1,7 +1,7 @@
-From d94176459f1c35cd5d0f9281dee970741eec8fac Mon Sep 17 00:00:00 2001
+From 5122515ac60277c64cc5ef91c2047a5e67334cf8 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 7 Mar 2021 22:42:50 +0100
-Subject: [PATCH 62/79] net: add "trk:" scheme and help identify URLs being
+Subject: [PATCH 55/73] net: add "trk:" scheme and help identify URLs being
  retrieved
 
 The Chromium codebase has left us with a number of suspect URLs, and
@@ -45,10 +45,10 @@ stripped and processing continues with the inner URL.
  url/gurl.h                                    |   5 +
  url/url_constants.cc                          |   1 +
  url/url_constants.h                           |   1 +
- 18 files changed, 226 insertions(+), 8 deletions(-)
+ 18 files changed, 227 insertions(+), 7 deletions(-)
 
 diff --git chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
-index d5c3dd451afc..431f242e2728 100644
+index dfe41d8c88a29..71ea0ee0c157c 100644
 --- chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
 +++ chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
 @@ -56,6 +56,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
@@ -60,7 +60,7 @@ index d5c3dd451afc..431f242e2728 100644
         base::LowerCaseEqualsASCII(scheme, url::kDataScheme))) {
      return metrics::OmniboxInputType::URL;
 diff --git chrome/browser/history/history_utils.cc chrome/browser/history/history_utils.cc
-index 3f54bbb409fe..8971b7e96ad2 100644
+index 3f54bbb409fec..8971b7e96ad2f 100644
 --- chrome/browser/history/history_utils.cc
 +++ chrome/browser/history/history_utils.cc
 @@ -21,6 +21,7 @@ bool CanAddURLToHistory(const GURL& url) {
@@ -72,7 +72,7 @@ index 3f54bbb409fe..8971b7e96ad2 100644
        url.SchemeIs(chrome::kChromeSearchScheme) ||
        url.SchemeIs(dom_distiller::kDomDistillerScheme))
 diff --git chrome/browser/signin/signin_promo.cc chrome/browser/signin/signin_promo.cc
-index 5e4ce29b835b..913665421d2c 100644
+index e5f8d42f931d9..4b9bc7ab81267 100644
 --- chrome/browser/signin/signin_promo.cc
 +++ chrome/browser/signin/signin_promo.cc
 @@ -76,8 +76,10 @@ GURL GetChromeSyncURLForDice(const std::string& email,
@@ -102,10 +102,10 @@ index 5e4ce29b835b..913665421d2c 100644
  }
  
 diff --git chrome/browser/ui/browser_navigator.cc chrome/browser/ui/browser_navigator.cc
-index 9e3369185322..e24bc7bb008f 100644
+index a50d5b83afa2d..6fb6f0dbb93e3 100644
 --- chrome/browser/ui/browser_navigator.cc
 +++ chrome/browser/ui/browser_navigator.cc
-@@ -793,7 +793,12 @@ bool IsURLAllowedInIncognito(const GURL& url,
+@@ -799,6 +799,11 @@ bool IsURLAllowedInIncognito(const GURL& url,
      return stripped_url.is_valid() &&
             IsURLAllowedInIncognito(stripped_url, browser_context);
    }
@@ -118,9 +118,8 @@ index 9e3369185322..e24bc7bb008f 100644
 +	}
    return IsHostAllowedInIncognito(url);
  }
- 
 diff --git chrome/browser/ui/singleton_tabs.cc chrome/browser/ui/singleton_tabs.cc
-index 6d99c680556d..3d4f0ccfae8e 100644
+index cc960a40b1b21..33119c43719b5 100644
 --- chrome/browser/ui/singleton_tabs.cc
 +++ chrome/browser/ui/singleton_tabs.cc
 @@ -99,7 +99,8 @@ int GetIndexOfExistingTab(Browser* browser, const NavigateParams& params) {
@@ -134,22 +133,34 @@ index 6d99c680556d..3d4f0ccfae8e 100644
  
      GURL rewritten_tab_url = tab_url;
 diff --git components/infobars/core/infobar_delegate.h components/infobars/core/infobar_delegate.h
-index d32451e392a2..dbd2a785416e 100644
+index 940b5f86c2cf5..7820d1a04f0c5 100644
 --- components/infobars/core/infobar_delegate.h
 +++ components/infobars/core/infobar_delegate.h
-@@ -171,6 +171,7 @@ class InfoBarDelegate {
-     SYSTEM_INFOBAR_DELEGATE_MAC = 101,
-     EXPERIMENTAL_INFOBAR_DELEGATE_LACROS = 102,
-     ROSETTA_REQUIRED_INFOBAR_DELEGATE = 103,
+@@ -175,6 +175,7 @@ class InfoBarDelegate {
+     // Removed: WEBID_PERMISSION_INFOBAR_DELEGATE = 104,
+     AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE = 105,
+     AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS = 106,
 +    TRACKING_ALERT_INFOBAR_DELEGATE = 9001,
    };
  
    // Describes navigation events, used to decide whether infobars should be
 diff --git components/omnibox/browser/autocomplete_input.cc components/omnibox/browser/autocomplete_input.cc
-index af84aa3e367f..463912accd6f 100644
+index ff9d9d7dc7673..e417d9964fa65 100644
 --- components/omnibox/browser/autocomplete_input.cc
 +++ components/omnibox/browser/autocomplete_input.cc
-@@ -486,6 +486,7 @@ void AutocompleteInput::ParseForEmphasizeComponents(
+@@ -79,7 +79,10 @@ void OffsetComponentsExcludingScheme(url::Parsed* parts, int offset) {
+ 
+ bool HasScheme(const std::u16string& input, const char* scheme) {
+   std::string utf8_input(base::UTF16ToUTF8(input));
+-  url::Component view_source_scheme;
++  url::Component view_source_scheme, trk_s;
++  if (url::FindAndCompareScheme(utf8_input, url::kTraceScheme, &trk_s))
++    gurl_strip_trk(utf8_input);
++  else
+   if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme,
+                                 &view_source_scheme)) {
+     utf8_input.erase(0, view_source_scheme.end() + 1);
+@@ -525,6 +528,7 @@ void AutocompleteInput::ParseForEmphasizeComponents(
    // For the view-source and blob schemes, we should emphasize the host of the
    // URL qualified by the view-source or blob prefix.
    if ((base::LowerCaseEqualsASCII(scheme_str, kViewSourceScheme) ||
@@ -157,21 +168,8 @@ index af84aa3e367f..463912accd6f 100644
         base::LowerCaseEqualsASCII(scheme_str, url::kBlobScheme)) &&
        (static_cast<int>(text.length()) > after_scheme_and_colon)) {
      // Obtain the URL prefixed by view-source or blob and parse it.
-@@ -559,9 +560,10 @@ int AutocompleteInput::NumNonHostComponents(const url::Parsed& parts) {
- bool AutocompleteInput::HasHTTPScheme(const base::string16& input) {
-   std::string utf8_input(base::UTF16ToUTF8(input));
-   url::Component scheme;
--  if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme, &scheme)) {
-+  if (url::FindAndCompareScheme(utf8_input, url::kTraceScheme, &scheme))
-+    gurl_strip_trk(utf8_input);
-+  else if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme, &scheme))
-     utf8_input.erase(0, scheme.end() + 1);
--  }
-   return url::FindAndCompareScheme(utf8_input, url::kHttpScheme, nullptr);
- }
- 
 diff --git content/browser/browser_url_handler_impl.cc content/browser/browser_url_handler_impl.cc
-index 35a7b78816ab..abf9ceb7d1fa 100644
+index 35a7b78816ab1..7c8417f4d193c 100644
 --- content/browser/browser_url_handler_impl.cc
 +++ content/browser/browser_url_handler_impl.cc
 @@ -16,9 +16,36 @@
@@ -231,7 +229,7 @@ index 35a7b78816ab..abf9ceb7d1fa 100644
 +
 +	private:
 +	TrkBar(const GURL &);
-+	base::string16 GetMessageText() const override;
++	std::u16string GetMessageText() const override;
 +	int GetButtons() const override;
 +	infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier(void) const override;
 +
@@ -264,7 +262,7 @@ index 35a7b78816ab..abf9ceb7d1fa 100644
 +	ConfirmInfoBarDelegate(), m_url(url)
 +{}
 +
-+base::string16 TrkBar::GetMessageText(void) const
++std::u16string TrkBar::GetMessageText(void) const
 +{
 +	return base::ASCIIToUTF16("Loading traced URL: " + m_url.spec());
 +}
@@ -309,10 +307,10 @@ index 35a7b78816ab..abf9ceb7d1fa 100644
 +
 +}
 diff --git content/browser/child_process_security_policy_impl.cc content/browser/child_process_security_policy_impl.cc
-index 5dea9c7ab461..d4ea69f938ff 100644
+index 51b159f1ab771..a7b4fadf251bd 100644
 --- content/browser/child_process_security_policy_impl.cc
 +++ content/browser/child_process_security_policy_impl.cc
-@@ -780,6 +780,7 @@ ChildProcessSecurityPolicyImpl::ChildProcessSecurityPolicyImpl() {
+@@ -821,6 +821,7 @@ ChildProcessSecurityPolicyImpl::ChildProcessSecurityPolicyImpl()
    RegisterPseudoScheme(url::kJavaScriptScheme);
    RegisterPseudoScheme(kViewSourceScheme);
    RegisterPseudoScheme(kGoogleChromeScheme);
@@ -321,7 +319,7 @@ index 5dea9c7ab461..d4ea69f938ff 100644
  
  ChildProcessSecurityPolicyImpl::~ChildProcessSecurityPolicyImpl() {
 diff --git content/browser/scheduler/browser_task_executor.cc content/browser/scheduler/browser_task_executor.cc
-index 8f594bfe2614..5f2616fe710c 100644
+index 8f594bfe26142..5f2616fe710c7 100644
 --- content/browser/scheduler/browser_task_executor.cc
 +++ content/browser/scheduler/browser_task_executor.cc
 @@ -149,6 +149,7 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
@@ -350,7 +348,7 @@ index 8f594bfe2614..5f2616fe710c 100644
      g_browser_task_executor = nullptr;
    }
 diff --git net/url_request/url_request.cc net/url_request/url_request.cc
-index b8409e807489..08b926bbb8e6 100644
+index f775153349c27..2fb05d8b85a32 100644
 --- net/url_request/url_request.cc
 +++ net/url_request/url_request.cc
 @@ -5,6 +5,10 @@
@@ -364,7 +362,7 @@ index b8409e807489..08b926bbb8e6 100644
  
  #include "base/bind.h"
  #include "base/callback.h"
-@@ -44,6 +48,33 @@
+@@ -45,6 +49,33 @@
  using base::Time;
  using std::string;
  
@@ -398,7 +396,7 @@ index b8409e807489..08b926bbb8e6 100644
  namespace net {
  
  namespace {
-@@ -566,6 +597,10 @@ URLRequest::URLRequest(const GURL& url,
+@@ -577,6 +608,10 @@ URLRequest::URLRequest(const GURL& url,
    // Sanity check out environment.
    DCHECK(base::ThreadTaskRunnerHandle::IsSet());
  
@@ -410,10 +408,10 @@ index b8409e807489..08b926bbb8e6 100644
    net_log_.BeginEvent(NetLogEventType::REQUEST_ALIVE, [&] {
      return NetLogURLRequestConstructorParams(url, priority_,
 diff --git net/url_request/url_request.h net/url_request/url_request.h
-index eed0ae918a0c..28781a9873e8 100644
+index 316b958a08ef0..9f6c6194f82a4 100644
 --- net/url_request/url_request.h
 +++ net/url_request/url_request.h
-@@ -48,6 +48,11 @@
+@@ -50,6 +50,11 @@
  #include "url/gurl.h"
  #include "url/origin.h"
  
@@ -426,7 +424,7 @@ index eed0ae918a0c..28781a9873e8 100644
  class Value;
  }  // namespace base
 diff --git services/network/public/cpp/simple_url_loader.cc services/network/public/cpp/simple_url_loader.cc
-index 779be1f9b97e..65aee5dae09c 100644
+index 8c9568108264c..3c483963c600d 100644
 --- services/network/public/cpp/simple_url_loader.cc
 +++ services/network/public/cpp/simple_url_loader.cc
 @@ -37,6 +37,7 @@
@@ -437,7 +435,7 @@ index 779be1f9b97e..65aee5dae09c 100644
  #include "services/network/public/cpp/data_element.h"
  #include "services/network/public/cpp/resource_request.h"
  #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
-@@ -1507,6 +1508,8 @@ void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
+@@ -1518,6 +1519,8 @@ void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
    DCHECK(!url_loader_);
    DCHECK(!request_state_->body_started);
  
@@ -447,23 +445,23 @@ index 779be1f9b97e..65aee5dae09c 100644
    if (remaining_retries_ > 0) {
      // Clone the URLLoaderFactory, to avoid any dependencies on its lifetime.
 diff --git tools/metrics/histograms/enums.xml tools/metrics/histograms/enums.xml
-index 321936210275..26b54906d296 100644
+index ed247042e6c0e..c3f25ba165a47 100644
 --- tools/metrics/histograms/enums.xml
 +++ tools/metrics/histograms/enums.xml
-@@ -37798,6 +37798,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
-   <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC"/>
-   <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS"/>
-   <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE"/>
+@@ -39899,6 +39899,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
+   <int value="104" label="WEBID_PERMISSION_INFOBAR_DELEGATE (Obsolete)"/>
+   <int value="105" label="AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE"/>
+   <int value="106" label="AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS"/>
 +  <int value="9001" label="TRACKING_ALERT_INFOBAR_DELEGATE"/>
  </enum>
  
  <enum name="InfoBarResponse">
 diff --git url/gurl.cc url/gurl.cc
-index b94bb80d3db9..0415b0736e2c 100644
+index dc3fb21c3ae26..c79dc0d501e39 100644
 --- url/gurl.cc
 +++ url/gurl.cc
-@@ -502,6 +502,41 @@ bool GURL::IsAboutUrl(base::StringPiece allowed_path) const {
-   return false;
+@@ -513,6 +513,41 @@ void GURL::WriteIntoTracedValue(perfetto::TracedValue context) const {
+   std::move(context).WriteString(possibly_invalid_spec());
  }
  
 +std::string &gurl_strip_trk(std::string &s)
@@ -486,7 +484,7 @@ index b94bb80d3db9..0415b0736e2c 100644
 +	return s[slen+1] == '0' && s[slen+2] == '.';
 +}
 +
-+GURL GURL::strip_trk(void) const
++GURL GURL::strip_trk() const
 +{
 +	if (!SchemeIs(url::kTraceScheme))
 +		return *this;
@@ -494,7 +492,7 @@ index b94bb80d3db9..0415b0736e2c 100644
 +	return GURL(gurl_strip_trk(s));
 +}
 +
-+bool GURL::is_trq(void) const
++bool GURL::is_trq() const
 +{
 +	if (!SchemeIs(url::kTraceScheme))
 +		return false;
@@ -505,20 +503,20 @@ index b94bb80d3db9..0415b0736e2c 100644
    return out << url.possibly_invalid_spec();
  }
 diff --git url/gurl.h url/gurl.h
-index 9b6449b7c010..1f9ec68effa3 100644
+index 7dcf1d55b050c..aa604d0c3a8dc 100644
 --- url/gurl.h
 +++ url/gurl.h
-@@ -434,6 +434,9 @@ class COMPONENT_EXPORT(URL) GURL {
-   // See base/trace_event/memory_usage_estimator.h for more info.
-   size_t EstimateMemoryUsage() const;
+@@ -439,6 +439,9 @@ class COMPONENT_EXPORT(URL) GURL {
  
-+  GURL strip_trk(void) const;
-+  bool is_trq(void) const;
+   void WriteIntoTracedValue(perfetto::TracedValue context) const;
+ 
++  GURL strip_trk() const;
++  bool is_trq() const;
 +
   private:
    // Variant of the string parsing constructor that allows the caller to elect
    // retain trailing whitespace, if any, on the passed URL spec, but only if
-@@ -482,6 +485,8 @@ class COMPONENT_EXPORT(URL) GURL {
+@@ -487,6 +490,8 @@ class COMPONENT_EXPORT(URL) GURL {
  // Stream operator so GURL can be used in assertion statements.
  COMPONENT_EXPORT(URL)
  std::ostream& operator<<(std::ostream& out, const GURL& url);
@@ -528,7 +526,7 @@ index 9b6449b7c010..1f9ec68effa3 100644
  COMPONENT_EXPORT(URL) bool operator==(const GURL& x, const GURL& y);
  COMPONENT_EXPORT(URL) bool operator!=(const GURL& x, const GURL& y);
 diff --git url/url_constants.cc url/url_constants.cc
-index 69399e420045..23b8312deb6a 100644
+index 9da6426b505f3..1f0609846582c 100644
 --- url/url_constants.cc
 +++ url/url_constants.cc
 @@ -28,6 +28,7 @@ const char kMailToScheme[] = "mailto";
@@ -536,15 +534,15 @@ index 69399e420045..23b8312deb6a 100644
  const char kQuicTransportScheme[] = "quic-transport";
  const char kTelScheme[] = "tel";
 +const char kTraceScheme[] = "trk";
+ const char kUrnScheme[] = "urn";
  const char kWsScheme[] = "ws";
  const char kWssScheme[] = "wss";
- 
 diff --git url/url_constants.h url/url_constants.h
-index f5a33dd81357..202dd8d4e1a1 100644
+index e6c6baecb6806..b4fb8f1f4ff3c 100644
 --- url/url_constants.h
 +++ url/url_constants.h
-@@ -34,6 +34,7 @@ COMPONENT_EXPORT(URL) extern const char kQuicTransportScheme[];
- COMPONENT_EXPORT(URL) extern const char kTelScheme[];
+@@ -35,6 +35,7 @@ COMPONENT_EXPORT(URL) extern const char kTelScheme[];
+ COMPONENT_EXPORT(URL) extern const char kUrnScheme[];
  COMPONENT_EXPORT(URL) extern const char kWsScheme[];
  COMPONENT_EXPORT(URL) extern const char kWssScheme[];
 +COMPONENT_EXPORT(URL) extern const char kTraceScheme[];
@@ -552,5 +550,5 @@ index f5a33dd81357..202dd8d4e1a1 100644
  // Used to separate a standard scheme and the hostname: "://".
  COMPONENT_EXPORT(URL) extern const char kStandardSchemeSeparator[];
 -- 
-2.30.1
+2.32.0
 

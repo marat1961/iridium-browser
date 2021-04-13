@@ -1,7 +1,7 @@
-From f85887e6fdb4d1a44d89a022a2c819b230a498ea Mon Sep 17 00:00:00 2001
+From 57ed7b52c0cb71b85dbf67d5bb14eae2481dd6a2 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 6 Sep 2020 20:43:13 +0200
-Subject: [PATCH 12/79] SUSE no-location-leap151.patch
+Subject: [PATCH 11/73] SUSE no-location-leap151.patch
 
 revert location on old GCC on 15.1, 15.2 gets it right tho
 ---
@@ -10,7 +10,7 @@ revert location on old GCC on 15.1, 15.2 gets it right tho
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git base/location.cc base/location.cc
-index e18e66116788..807110999e0f 100644
+index e18e66116788f..807110999e0ff 100644
 --- base/location.cc
 +++ base/location.cc
 @@ -92,7 +92,7 @@ NOINLINE Location Location::Current(const char* file_name) {
@@ -23,7 +23,7 @@ index e18e66116788..807110999e0f 100644
  #endif
  
 diff --git base/location.h base/location.h
-index a5d3a9279707..f112dadb986a 100644
+index a5d3a92797077..f112dadb986a0 100644
 --- base/location.h
 +++ base/location.h
 @@ -23,7 +23,7 @@ namespace base {
@@ -36,5 +36,5 @@ index a5d3a9279707..f112dadb986a 100644
  // declaration in the case of default arguments, rather than at the call site.
  #define SUPPORTS_LOCATION_BUILTINS 1
 -- 
-2.30.1
+2.32.0
 

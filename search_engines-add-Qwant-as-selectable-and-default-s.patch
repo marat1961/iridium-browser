@@ -1,7 +1,7 @@
-From f300094400424b8b043d8639de924cc7f4a65492 Mon Sep 17 00:00:00 2001
+From 82aa165076f8b1e5531953f6adfb3ac41da71516 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Mon, 4 May 2015 15:27:37 +0200
-Subject: [PATCH 52/79] search_engines: add Qwant as selectable and default
+Subject: [PATCH 46/73] search_engines: add Qwant as selectable and default
  search engine
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 52/79] search_engines: add Qwant as selectable and default
  1 file changed, 108 insertions(+), 1 deletion(-)
 
 diff --git components/search_engines/template_url_prepopulate_data.cc components/search_engines/template_url_prepopulate_data.cc
-index 7c44b0b531ed..43461b6a3bff 100644
+index 7c44b0b531ed2..43461b6a3bff1 100644
 --- components/search_engines/template_url_prepopulate_data.cc
 +++ components/search_engines/template_url_prepopulate_data.cc
 @@ -29,6 +29,7 @@ namespace {
@@ -880,5 +880,5 @@ index 7c44b0b531ed..43461b6a3bff 100644
      &google,
      &bing,
 -- 
-2.30.1
+2.32.0
 

@@ -1,27 +1,30 @@
-From b10fbc3b9fd753332506190d13e1567a0c142d6b Mon Sep 17 00:00:00 2001
+From c82571a24ef5145b1c00bdf6a43aed4db4a645d6 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sun, 28 Feb 2021 13:27:05 +0100
-Subject: [PATCH 04/79] doc: new README.rst
+Subject: [PATCH 04/73] doc: new README.rst
 
 ---
- README.md  | 16 ----------
- README.rst | 85 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 85 insertions(+), 16 deletions(-)
+ README.md  | 19 -----------
+ README.rst | 92 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 92 insertions(+), 19 deletions(-)
  delete mode 100644 README.md
  create mode 100644 README.rst
 
 diff --git README.md README.md
 deleted file mode 100644
-index b6b57e5fc75e..000000000000
+index 666ab81754b2f..0000000000000
 --- README.md
 +++ /dev/null
-@@ -1,16 +0,0 @@
+@@ -1,19 +0,0 @@
 -# ![Logo](chrome/app/theme/chromium/product_logo_64.png) Chromium
 -
 -Chromium is an open-source browser project that aims to build a safer, faster,
 -and more stable way for all users to experience the web.
 -
 -The project's web site is https://www.chromium.org.
+-
+-To check out the source code locally, don't use `git clone`! Instead,
+-follow [the instructions on how to get the code](docs/get_the_code.md).
 -
 -Documentation in the source is rooted in [docs/README.md](docs/README.md).
 -
@@ -34,10 +37,10 @@ index b6b57e5fc75e..000000000000
 -code should be in subdirectories of the product.
 diff --git README.rst README.rst
 new file mode 100644
-index 000000000000..fab9c995cc23
+index 0000000000000..c8d05aa77e385
 --- /dev/null
 +++ README.rst
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,92 @@
 +Iridium Browser
 +===============
 +
@@ -114,7 +117,14 @@ index 000000000000..fab9c995cc23
 +   ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 +   ```
 +
-+#) Issue ``gn gen '--args=custom_toolchain="//build/toolchain/linux/unbundle:default" host_toolchain="//build/toolchain/linux/unbundle:default" linux_use_bundled_binutils=false use_custom_libcxx=false is_debug=false enable_nacl=false use_swiftshader_with_subzero=true is_component_ffmpeg=true use_cups=true use_aura=true concurrent_links=1 symbol_level=1 blink_symbol_level=0 use_kerberos=true enable_vr=false optimize_webui=false enable_reading_list=false use_pulseaudio=true link_pulseaudio=true is_component_build=false use_sysroot=false fatal_linker_warnings=false use_allocator="tcmalloc" fieldtrial_testing_like_official_build=true use_gold=true use_gnome_keyring=false use_unofficial_version_number=false use_lld=false use_vaapi=true use_sysroot=false treat_warnings_as_errors=false enable_widevine=false use_dbus=true use_system_minigbm=true use_system_harfbuzz=true use_system_freetype=true enable_hangout_services_extension=true enable_vulkan=true enable_hevc_demuxing=true rtc_use_pipewire=true rtc_link_pipewire=true rtc_use_pipewire_version="0.3" is_clang=false icu_use_data_file=false proprietary_codecs=true ffmpeg_branding="Chrome"' out/Release``
++#) Because chromium is too stupid to use pkg-config for wayland and xkbcommon,
++   it needs to be manually specified. Issue
++
++   ```
++   export CFLAGS="-O2 -Wall $(pkg-config wayland-client xkbcommon --cflags)"
++   export CXXFLAGS="$CFLAGS"
++   gn gen '--args=custom_toolchain="//build/toolchain/linux/unbundle:default" host_toolchain="//build/toolchain/linux/unbundle:default" use_custom_libcxx=false is_debug=false enable_nacl=false use_swiftshader_with_subzero=true is_component_ffmpeg=true use_cups=true use_aura=true concurrent_links=1 symbol_level=1 blink_symbol_level=0 use_kerberos=true enable_vr=false optimize_webui=false enable_reading_list=false use_pulseaudio=true link_pulseaudio=true is_component_build=false use_sysroot=false fatal_linker_warnings=false use_allocator="tcmalloc" fieldtrial_testing_like_official_build=true use_gold=true use_gnome_keyring=false use_unofficial_version_number=false use_lld=false use_vaapi=true use_sysroot=false treat_warnings_as_errors=false enable_widevine=false use_dbus=true use_system_harfbuzz=true use_system_freetype=true enable_hangout_services_extension=true enable_vulkan=true rtc_use_pipewire=true rtc_link_pipewire=true rtc_pipewire_version="0.3" is_clang=false icu_use_data_file=false proprietary_codecs=true ffmpeg_branding="Chrome"' out/Release
++   ```
 +
 +#) There are a number of dependencies, and they may vary across operating
 +   systems. The gn command fails if there are unmet dependencies, and it will
@@ -124,5 +134,5 @@ index 000000000000..fab9c995cc23
 +
 +#) Issue ``LD_LIBRARY_PATH=$PWD/out/Release ninja -C out/Release chrome chromedriver``.
 -- 
-2.30.1
+2.32.0
 

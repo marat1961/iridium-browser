@@ -1,7 +1,7 @@
-From 342f6de5b02fc4f514e329c0de24a11d78850782 Mon Sep 17 00:00:00 2001
+From 19cab11b3a07515a3ad84309ee540c4a207bbc66 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 13 Sep 2014 16:43:55 +0200
-Subject: [PATCH 44/79] prefs: block third-party cookies by default
+Subject: [PATCH 38/73] prefs: block third-party cookies by default
 
 Reject extra cookies which are likely used for tracking and whatnot.
 There are very few websites which require this, and if you do visit
@@ -11,10 +11,10 @@ some, static exceptions can be defined.
  1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git chrome/browser/prefs/browser_prefs.cc chrome/browser/prefs/browser_prefs.cc
-index f92fc6b05836..c7072e9093de 100644
+index 2d72455654132..6cd41f4d69c6b 100644
 --- chrome/browser/prefs/browser_prefs.cc
 +++ chrome/browser/prefs/browser_prefs.cc
-@@ -548,9 +548,7 @@ void RegisterProfilePrefsForMigration(
+@@ -600,9 +600,7 @@ void RegisterProfilePrefsForMigration(
    registry->RegisterDictionaryPref(kHashedAvailablePages);
  
    registry->RegisterDictionaryPref(kObservedSessionTime);
@@ -26,5 +26,5 @@ index f92fc6b05836..c7072e9093de 100644
  
    registry->RegisterIntegerPref(kPasswordManagerOnboardingState, 0);
 -- 
-2.30.1
+2.32.0
 

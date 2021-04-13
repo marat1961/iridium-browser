@@ -1,0 +1,28 @@
+From 64b3382857e1bcd23ddf45e6d9f3fca1490fc608 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Wed, 9 Jun 2021 12:45:29 +0200
+Subject: [PATCH 24/73] GFA
+ chromium-91-java-only-allowed-in-android-builds.patch
+
+References: https://bugs.chromium.org/p/chromium/issues/detail?id=1192875
+---
+ third_party/closure_compiler/compiler.py | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git third_party/closure_compiler/compiler.py third_party/closure_compiler/compiler.py
+index 75690ceb9749a..7b9c76f742904 100755
+--- third_party/closure_compiler/compiler.py
++++ third_party/closure_compiler/compiler.py
+@@ -13,8 +13,7 @@ import subprocess
+ 
+ 
+ _CURRENT_DIR = os.path.join(os.path.dirname(__file__))
+-_JAVA_PATH = os.path.join(_CURRENT_DIR, "..", "jdk", "current", "bin", "java")
+-assert os.path.isfile(_JAVA_PATH), "java only allowed in android builds"
++_JAVA_PATH = "java"
+ 
+ class Compiler(object):
+   """Runs the Closure compiler on given source files to typecheck them
+-- 
+2.32.0
+

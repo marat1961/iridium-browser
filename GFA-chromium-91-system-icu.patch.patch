@@ -1,0 +1,31 @@
+From 03b5f2540dce97546c2a26cebe71b6f640d2fd1a Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Wed, 9 Jun 2021 12:46:06 +0200
+Subject: [PATCH 26/73] GFA chromium-91-system-icu.patch
+
+From a0ddb153bdaf0ef83c8bfec744fedb97bf4ccfd0 Mon Sep 17 00:00:00 2001
+From: Stephan Hartmann <stha09@googlemail.com>
+Date: Fri, 16 Apr 2021 14:09:29 +0000
+Subject: [PATCH] [unbundle] Use char16_t as UCHAR_TYPE
+
+Overriding UCHAR_TYPE was dropped with:
+https://chromium-review.googlesource.com/c/chromium/deps/icu/+/2732628
+---
+ build/linux/unbundle/icu.gn | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git build/linux/unbundle/icu.gn build/linux/unbundle/icu.gn
+index 0f52fc11e79e6..6f3f8438bd854 100644
+--- build/linux/unbundle/icu.gn
++++ build/linux/unbundle/icu.gn
+@@ -16,7 +16,6 @@ config("icu_config") {
+   defines = [
+     "USING_SYSTEM_ICU=1",
+     "ICU_UTIL_DATA_IMPL=ICU_UTIL_DATA_STATIC",
+-    "UCHAR_TYPE=uint16_t",
+ 
+     # U_EXPORT (defined in unicode/platform.h) is used to set public visibility
+     # on classes through the U_COMMON_API and U_I18N_API macros (among others).
+-- 
+2.32.0
+

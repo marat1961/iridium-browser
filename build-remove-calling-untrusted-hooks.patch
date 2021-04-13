@@ -1,7 +1,7 @@
-From fc3771490a6b3761b692440a64e47e76f807b3bf Mon Sep 17 00:00:00 2001
+From bb0d049ca37be595bc371e7c99aa9095cbbfecb5 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Thu, 20 Apr 2017 16:25:49 +0200
-Subject: [PATCH 01/79] build: remove calling untrusted hooks
+Subject: [PATCH 01/73] build: remove calling untrusted hooks
 
 Avoid downloading untrusted executables and wasting time with a
 sysroot.
@@ -10,7 +10,7 @@ sysroot.
  1 file changed, 23 insertions(+), 17 deletions(-)
 
 diff --git DEPS DEPS
-index 91cc34323ae0..07992a0f9b88 100644
+index 71e5b13904bef..a26fb7ed209e9 100644
 --- DEPS
 +++ DEPS
 @@ -42,6 +42,7 @@ gclient_gn_args = [
@@ -19,26 +19,26 @@ index 91cc34323ae0..07992a0f9b88 100644
    'checkout_nacl',
 +  'checkout_never',
    'checkout_openxr',
+   'checkout_rts_model',
    'cros_boards',
-   'cros_boards_with_qemu_images',
-@@ -66,6 +67,7 @@ vars = {
+@@ -67,6 +68,7 @@ vars = {
    # variables.
    # TODO(ehmaldonado): Remove this once the bug in gclient is fixed.
    'checkout_android': False,
 +  'checkout_never': False,
  
-   # Pull in Android prebuilts build tools so we can create Java xrefs
-   'checkout_android_prebuilts_build_tools': False,
-@@ -93,7 +95,7 @@ vars = {
+   # By default, don't check out Fuchsia. Will be overridden by gclient
+   # variables.
+@@ -99,7 +101,7 @@ vars = {
  
-   # Check out and download nacl by default. This can be disabled e.g. with
-   # custom_vars.
--  'checkout_nacl': True,
+   # Check out and download nacl by default, unless on an arm mac.
+   # This can be disabled e.g. with custom_vars.
+-  'checkout_nacl': 'not (host_os == "mac" and host_cpu == "arm64")',
 +  'checkout_nacl': False,
  
    # By default, do not check out src-internal. This can be overridden e.g. with
    # custom_vars.
-@@ -128,8 +130,8 @@ vars = {
+@@ -130,8 +132,8 @@ vars = {
    # support for other platforms may be added in the future.
    'checkout_openxr' : 'checkout_win',
  
@@ -49,7 +49,7 @@ index 91cc34323ae0..07992a0f9b88 100644
  
    # By default bot checkouts the WPR archive files only when this
    # flag is set True.
-@@ -4195,35 +4197,35 @@ hooks = [
+@@ -3639,35 +3641,35 @@ hooks = [
    {
      'name': 'sysroot_arm',
      'pattern': '.',
@@ -90,7 +90,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': ['python', 'src/build/linux/sysroot_scripts/install-sysroot.py',
                 '--arch=mips64el'],
    },
-@@ -4231,7 +4233,7 @@ hooks = [
+@@ -3675,7 +3677,7 @@ hooks = [
    {
      'name': 'sysroot_x64',
      'pattern': '.',
@@ -99,7 +99,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': ['python', 'src/build/linux/sysroot_scripts/install-sysroot.py',
                 '--arch=x64'],
    },
-@@ -4267,7 +4269,7 @@ hooks = [
+@@ -3722,7 +3724,7 @@ hooks = [
      # Note: On Win, this should run after win_toolchain, as it may use it.
      'name': 'clang',
      'pattern': '.',
@@ -108,7 +108,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': ['python', 'src/tools/clang/scripts/update.py'],
    },
    {
-@@ -4275,7 +4277,7 @@ hooks = [
+@@ -3730,7 +3732,7 @@ hooks = [
      # Note: On Win, this should run after win_toolchain, as it may use it.
      'name': 'clang_tot',
      'pattern': '.',
@@ -116,8 +116,8 @@ index 91cc34323ae0..07992a0f9b88 100644
 +    'condition': 'checkout_never',
      'action': ['python', 'src/tools/clang/scripts/build.py',
                 '--llvm-force-head-revision',
-                '--with-android={checkout_android}'],
-@@ -4284,7 +4286,7 @@ hooks = [
+                '--with-android={checkout_android}',
+@@ -3740,7 +3742,7 @@ hooks = [
      # This is supposed to support the same set of platforms as 'clang' above.
      'name': 'clang_coverage',
      'pattern': '.',
@@ -126,7 +126,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': ['python', 'src/tools/clang/scripts/update.py',
                 '--package=coverage_tools'],
    },
-@@ -4397,7 +4399,7 @@ hooks = [
+@@ -3861,7 +3863,7 @@ hooks = [
    {
      'name': 'rc_linux',
      'pattern': '.',
@@ -135,7 +135,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'python',
                  'src/third_party/depot_tools/download_from_google_storage.py',
                  '--no_resume',
-@@ -4409,6 +4411,7 @@ hooks = [
+@@ -3873,6 +3875,7 @@ hooks = [
   {
      'name': 'test_fonts',
      'pattern': '.',
@@ -143,7 +143,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'download_from_google_storage',
                  '--no_resume',
                  '--extract',
-@@ -4421,6 +4424,7 @@ hooks = [
+@@ -3885,6 +3888,7 @@ hooks = [
    {
      'name': 'opus_test_files',
      'pattern': '.',
@@ -151,7 +151,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': ['download_from_google_storage',
                 '--no_auth',
                 '--quiet',
-@@ -4474,7 +4478,7 @@ hooks = [
+@@ -3924,7 +3928,7 @@ hooks = [
    {
      'name': 'msan_chained_origins',
      'pattern': '.',
@@ -160,7 +160,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'python',
                  'src/third_party/depot_tools/download_from_google_storage.py',
                  '--no_resume',
-@@ -4486,7 +4490,7 @@ hooks = [
+@@ -3936,7 +3940,7 @@ hooks = [
    {
      'name': 'msan_no_origins',
      'pattern': '.',
@@ -169,7 +169,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'python',
                  'src/third_party/depot_tools/download_from_google_storage.py',
                  '--no_resume',
-@@ -4498,6 +4502,7 @@ hooks = [
+@@ -3948,6 +3952,7 @@ hooks = [
    {
      'name': 'wasm_fuzzer',
      'pattern': '.',
@@ -177,7 +177,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'python',
                  'src/third_party/depot_tools/download_from_google_storage.py',
                  '--no_resume',
-@@ -4512,7 +4517,7 @@ hooks = [
+@@ -3962,7 +3967,7 @@ hooks = [
    {
      'name': 'node_linux64',
      'pattern': '.',
@@ -186,7 +186,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'python',
                  'src/third_party/depot_tools/download_from_google_storage.py',
                  '--no_resume',
-@@ -4655,6 +4660,7 @@ hooks = [
+@@ -4121,6 +4126,7 @@ hooks = [
    {
      'name': 'zucchini_testdata',
      'pattern': '.',
@@ -194,7 +194,7 @@ index 91cc34323ae0..07992a0f9b88 100644
      'action': [ 'python',
                  'src/third_party/depot_tools/download_from_google_storage.py',
                  '--no_resume',
-@@ -4688,7 +4694,7 @@ hooks = [
+@@ -4144,7 +4150,7 @@ hooks = [
    {
      'name': 'Fetch Android AFDO profile',
      'pattern': '.',
@@ -204,5 +204,5 @@ index 91cc34323ae0..07992a0f9b88 100644
                  'src/tools/download_optimization_profile.py',
                  '--newest_state=src/chrome/android/profiles/newest.txt',
 -- 
-2.30.1
+2.32.0
 

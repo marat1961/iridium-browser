@@ -1,0 +1,65 @@
+From 679f1d2f1f27b2c04bf8a007a61c792208a60e16 Mon Sep 17 00:00:00 2001
+From: Jan Engelhardt <jengelh@inai.de>
+Date: Wed, 9 Jun 2021 12:42:48 +0200
+Subject: [PATCH 21/73] GFA chromium-90-fseal.patch
+
+---
+ mojo/core/channel_linux.cc                        | 15 +++++++++++++++
+ .../syscall_parameters_restrictions.cc            | 15 +++++++++++++++
+ 2 files changed, 30 insertions(+)
+
+diff --git mojo/core/channel_linux.cc mojo/core/channel_linux.cc
+index 619b86e373f34..f4fab9fc0ba7e 100644
+--- mojo/core/channel_linux.cc
++++ mojo/core/channel_linux.cc
+@@ -5,6 +5,21 @@
+ #include "mojo/core/channel_linux.h"
+ 
+ #include <fcntl.h>
++#ifndef F_SEAL_SEAL
++# define F_SEAL_SEAL    0x0001
++#endif
++#ifndef F_SEAL_SHRINK
++# define F_SEAL_SHRINK        0x0002
++#endif
++#ifndef F_SEAL_GROW
++# define F_SEAL_GROW  0x0004
++#endif
++#ifndef F_ADD_SEALS
++# define F_ADD_SEALS    1033
++#endif
++#ifndef F_GET_SEALS
++# define F_GET_SEALS    1034
++#endif
+ #include <linux/futex.h>
+ #include <linux/memfd.h>
+ #include <sys/eventfd.h>
+diff --git sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc
+index cc0e91b203c00..15eb9a6f414f8 100644
+--- sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc
++++ sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.cc
+@@ -6,6 +6,21 @@
+ 
+ #include <errno.h>
+ #include <fcntl.h>
++#ifndef F_SEAL_SEAL
++# define F_SEAL_SEAL    0x0001
++#endif
++#ifndef F_SEAL_SHRINK
++# define F_SEAL_SHRINK        0x0002
++#endif
++#ifndef F_SEAL_GROW
++# define F_SEAL_GROW  0x0004
++#endif
++#ifndef F_ADD_SEALS
++# define F_ADD_SEALS    1033
++#endif
++#ifndef F_GET_SEALS
++# define F_GET_SEALS    1034
++#endif
+ #include <linux/net.h>
+ #include <sched.h>
+ #include <signal.h>
+-- 
+2.32.0
+

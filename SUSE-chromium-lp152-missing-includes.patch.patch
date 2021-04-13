@@ -1,14 +1,14 @@
-From f2f805595519dbfe339b01954021be01acb8e3b6 Mon Sep 17 00:00:00 2001
+From 2687f1b508165096fe9f31a43fd856c8472d3fbc Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
-Date: Thu, 4 Mar 2021 17:08:41 +0100
-Subject: [PATCH 26/79] SUSE chromium-lp152-missing-includes.patch
+Date: Wed, 9 Jun 2021 12:41:43 +0200
+Subject: [PATCH 19/73] SUSE chromium-lp152-missing-includes.patch
 
 ---
  .../autofill/core/browser/pattern_provider/pattern_provider.h    | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git components/autofill/core/browser/pattern_provider/pattern_provider.h components/autofill/core/browser/pattern_provider/pattern_provider.h
-index 4ddd9cf64693..4aca715d673d 100644
+index 767ad35788e88..f08b4b48b63b2 100644
 --- components/autofill/core/browser/pattern_provider/pattern_provider.h
 +++ components/autofill/core/browser/pattern_provider/pattern_provider.h
 @@ -5,6 +5,7 @@
@@ -20,5 +20,5 @@ index 4ddd9cf64693..4aca715d673d 100644
  
  #include "base/gtest_prod_util.h"
 -- 
-2.30.1
+2.32.0
 

@@ -1,31 +1,14 @@
-From 4611ead52b49dfbe6130d68a5e5b45b0bfe027ae Mon Sep 17 00:00:00 2001
+From eea6d121ec568183927b984fa51fb7e61dae0fc9 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Sat, 13 Sep 2014 16:55:12 +0200
-Subject: [PATCH 45/79] cloud-print: disable in prefs and component loader
+Subject: [PATCH 39/73] cloud-print: disable in prefs and component loader
 
 ---
- chrome/browser/extensions/component_loader.cc | 2 ++
- chrome/browser/ui/browser_ui_prefs.cc         | 2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ chrome/browser/ui/browser_ui_prefs.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git chrome/browser/extensions/component_loader.cc chrome/browser/extensions/component_loader.cc
-index 2a810468c745..30a7f76b53cb 100644
---- chrome/browser/extensions/component_loader.cc
-+++ chrome/browser/extensions/component_loader.cc
-@@ -461,9 +461,11 @@ void ComponentLoader::AddDefaultComponentExtensions(
- #else  // defined(OS_CHROMEOS)
-   DCHECK(!skip_session_components);
- #if BUILDFLAG(ENABLE_PRINTING)
-+#if 0 /* IRIDIUM */
-   // Cloud Print component app. Not required on Chrome OS.
-   Add(IDR_CLOUDPRINT_MANIFEST,
-       base::FilePath(FILE_PATH_LITERAL("cloud_print")));
-+#endif
- #endif  // BUILDFLAG(ENABLE_PRINTING)
- #endif  // defined(OS_CHROMEOS)
- 
 diff --git chrome/browser/ui/browser_ui_prefs.cc chrome/browser/ui/browser_ui_prefs.cc
-index 45da83540039..ef227dc37cad 100644
+index 02c98b26dadf5..99f1c47b3c90c 100644
 --- chrome/browser/ui/browser_ui_prefs.cc
 +++ chrome/browser/ui/browser_ui_prefs.cc
 @@ -75,7 +75,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -38,5 +21,5 @@ index 45da83540039..ef227dc37cad 100644
    registry->RegisterDictionaryPref(prefs::kBrowserWindowPlacementPopup);
    registry->RegisterDictionaryPref(prefs::kAppWindowPlacement);
 -- 
-2.30.1
+2.32.0
 

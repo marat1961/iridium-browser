@@ -1,7 +1,7 @@
-From 4c21b508858dd6cb60c50078e6e95c6fca7045f6 Mon Sep 17 00:00:00 2001
+From 6849e36182777a5196761aeb551334ccb0493f73 Mon Sep 17 00:00:00 2001
 From: Jan Engelhardt <jengelh@inai.de>
 Date: Fri, 13 Feb 2015 01:04:21 +0100
-Subject: [PATCH 50/79] prefs: always prompt for download directory by default
+Subject: [PATCH 44/73] prefs: always prompt for download directory by default
 
 If the user opens a link, one of two things might happen. The URI
 resolves to a "web page" and will be displayed, then everything is
@@ -28,10 +28,10 @@ TLDR: Do not let files sneak onto the disk too easily.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git chrome/browser/download/download_prefs.cc chrome/browser/download/download_prefs.cc
-index 69a0e4c0e6fb..ddcd6b6b2391 100644
+index a95103026c8c3..e5e4a03d4d9cf 100644
 --- chrome/browser/download/download_prefs.cc
 +++ chrome/browser/download/download_prefs.cc
-@@ -283,7 +283,7 @@ void DownloadPrefs::RegisterProfilePrefs(
+@@ -284,7 +284,7 @@ void DownloadPrefs::RegisterProfilePrefs(
      user_prefs::PrefRegistrySyncable* registry) {
    registry->RegisterBooleanPref(
        prefs::kPromptForDownload,
@@ -41,5 +41,5 @@ index 69a0e4c0e6fb..ddcd6b6b2391 100644
    registry->RegisterStringPref(prefs::kDownloadExtensionsToOpen, std::string());
    registry->RegisterListPref(prefs::kDownloadExtensionsToOpenByPolicy, {});
 -- 
-2.30.1
+2.32.0
 
